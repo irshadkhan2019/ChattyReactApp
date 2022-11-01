@@ -11,6 +11,7 @@ const Input = ({
   labelText,
   placeholder,
   handleChange,
+  style,
 }) => {
   return (
     <>
@@ -29,6 +30,7 @@ const Input = ({
           placeholder={placeholder}
           className={`form-input ${className}`}
           autoComplete="false"
+          style={style}
         />
       </div>
     </>
@@ -44,6 +46,7 @@ Input.propTypes = {
   className: PropTypes.string,
   placeholder: PropTypes.string,
   handleChange: PropTypes.func,
+  style: PropTypes.any,
 };
 
 export default Input;

@@ -4,8 +4,34 @@ import Button from "./../../../components/button/Button";
 import { FaArrowLeft } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import backgroundImage from "./../../../assets/images/background.jpg";
+import { useState } from "react";
+import { authService } from "../../../services/api/auth/auth.service";
 
 const ForgotPassword = () => {
+  const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertType, setAlertType] = useState("");
+  const [responseMessage, setResponseMessage] = useState("");
+
+  const forgotPassword = async (event) => {
+    setLoading(true);
+    event.preventDefault();
+    try {
+      const response = await authService.forgotPassword({ email });
+      setLoading(false);
+      setEmail("");
+      setShowAlert(false);
+      setAlertType("alert-success");
+      setResponseMessage(response?.data?.message);
+    } catch (error) {
+      setAlertType("alert-error");
+      setLoading(false);
+      setShowAlert(true);
+      setResponseMessage(error?.response?.data?.message);
+    }
+  };
+
   return (
     <>
       <div
@@ -23,26 +49,38 @@ const ForgotPassword = () => {
 
               <div className="tab-item">
                 <div className="auth-inner">
-                  {/* <div className="alerts alert-error" role="alert">
-                    Enter valid Emial
-                  </div> */}
-                  <form className="forgot-password-form">
+                  {showAlert && responseMessage && (
+                    <div className={`alerts ${alertType}`} role="alert">
+                      {responseMessage}
+                    </div>
+                  )}
+                  <form
+                    className="forgot-password-form"
+                    onSubmit={forgotPassword}
+                  >
                     <div className="form-input-container">
                       <Input
-                        id="Email"
-                        name="Email"
+                        id="email"
+                        name="email"
                         type="email"
-                        value="Izuku@gmail.com"
+                        value={email}
                         labelText="Email"
                         placeholder="Enter Email"
-                        handleChange={() => {}}
+                        style={{
+                          border: `${showAlert ? "1px solid #fa9b8a" : ""}`,
+                        }}
+                        handleChange={(event) => setEmail(event.target.value)}
                       />
                     </div>
                     {/* button component */}
                     <Button
-                      label={"ForgotPassword"}
+                      label={`${
+                        loading
+                          ? "FORGOT PASSWORD IN PROGRESS..."
+                          : "FORGOT PASSWORD"
+                      }`}
                       className="auth-button button"
-                      disabled={true}
+                      disabled={!email}
                     />
 
                     <Link to={"/"}>
