@@ -5,6 +5,9 @@ import { useEffect, useState } from "react";
 import { Utils } from "../../../services/utils/utils.service";
 import { authService } from "./../../../services/api/auth/auth.service";
 import { useNavigate } from "react-router-dom";
+import useLocalStorage from "./../../../hooks/useLocalStorage";
+import { useDispatch } from "react-redux";
+import useSessionStorage from "../../../hooks/useSessionStorage";
 
 const Register = () => {
   const [username, setUsername] = useState("");
@@ -15,6 +18,12 @@ const Register = () => {
   const [alertType, setAlertType] = useState("");
   const [hasError, setHasError] = useState(false);
   const [user, setUser] = useState();
+  const [setStoredUsername] = useLocalStorage("username", "set");
+  const [setLoggedIn] = useLocalStorage("keepLoggedIn", "set");
+
+  const [pageReload] = useSessionStorage("pageReload", "set");
+  const dispatch = useDispatch();
+
   const navigate = useNavigate();
 
   const registerUser = async (event) => {
@@ -36,9 +45,14 @@ const Register = () => {
         avatarImage,
       });
       console.log(result);
-      setUser(result.data.user);
+      setLoggedIn(true);
+      setStoredUsername(username);
+      // setUser(result.data.user);
       setHasError(false);
       setAlertType("alert-success");
+
+      //store Registered user in store
+      Utils.dispatchUser(result, pageReload, dispatch, setUser);
     } catch (error) {
       setLoading(false);
       setHasError(true);

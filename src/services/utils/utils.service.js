@@ -1,10 +1,15 @@
 import { floor, random } from "lodash";
+import {
+  addUser,
+  clearUser,
+} from "../../redux-toolkit/reducers/user/user.reducer";
 import { avatarColors } from "./static.data";
 
 export class Utils {
   static avatarColor() {
     return avatarColors[floor(random(0.9) * avatarColors.length)];
   }
+
   static generateAvatar(text, backgroundColor, foregroundColor = "white") {
     const canvas = document.createElement("canvas");
     const context = canvas.getContext("2d");
@@ -23,5 +28,24 @@ export class Utils {
     context.fillText(text, canvas.width / 2, canvas.height / 2);
 
     return canvas.toDataURL("image/png");
+  }
+  //result is the data we get from api after user logs in
+  //pagereload session fn is used to make user stay a same page after reload instead
+  //of going to login page
+  static dispatchUser(result, pageReload, dispatch, setUser) {
+    pageReload(true);
+    dispatch(addUser({ token: result.data.token, profile: result.data.user }));
+    setUser(result.data.user);
+  }
+  static clearStore({
+    dispatch,
+    deleteStorageUsername,
+    deleteSessionPageReload,
+    setLoggedIn,
+  }) {
+    dispatch(clearUser());
+    deleteStorageUsername();
+    deleteSessionPageReload();
+    setLoggedIn(false);
   }
 }

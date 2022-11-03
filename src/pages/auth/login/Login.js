@@ -5,6 +5,10 @@ import { FaArrowRight } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { authService } from "../../../services/api/auth/auth.service";
+import useLocalStorage from "../../../hooks/useLocalStorage";
+import { Utils } from "../../../services/utils/utils.service";
+import useSessionStorage from "./../../../hooks/useSessionStorage";
+import { useDispatch } from "react-redux";
 
 const Login = () => {
   const [username, setUsername] = useState("");
@@ -15,6 +19,10 @@ const Login = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [alertType, setAlertType] = useState("");
   const [user, setUser] = useState();
+  const [setStoredUsername] = useLocalStorage("username", "set");
+  const [setLoggedIn] = useLocalStorage("keepLoggedIn", "set");
+  const [pageReload] = useSessionStorage("pageReload", "set");
+  const dispatch = useDispatch();
 
   const navigate = useNavigate();
 
@@ -27,6 +35,11 @@ const Login = () => {
         username,
         password,
       });
+      //store loggedIn user in store
+      Utils.dispatchUser(result, pageReload, dispatch, setUser);
+      // setUser(result.data.user);
+      setLoggedIn(keepLoggedIn);
+      setStoredUsername(username);
       setHasError(false);
       setAlertType("alert-success");
     } catch (error) {
