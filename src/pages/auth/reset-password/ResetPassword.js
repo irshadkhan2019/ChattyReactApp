@@ -54,9 +54,12 @@ const ResetPassword = () => {
               </ul>
               <div className="tab-item">
                 <div className="auth-inner">
-                  <div className="alerts alert-error" role="alert">
-                    Error message
-                  </div>
+                  {showAlert && responseMessage && (
+                    <div className={`alerts ${alertType}`} role="alert">
+                      {responseMessage}
+                    </div>
+                  )}
+
                   <form
                     className="reset-password-form"
                     onSubmit={resetPassword}

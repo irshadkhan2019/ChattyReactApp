@@ -3,6 +3,7 @@ import {
   addUser,
   clearUser,
 } from "../../redux-toolkit/reducers/user/user.reducer";
+
 import { avatarColors } from "./static.data";
 
 export class Utils {
@@ -33,6 +34,12 @@ export class Utils {
   //pagereload session fn is used to make user stay a same page after reload instead
   //of going to login page
   static dispatchUser(result, pageReload, dispatch, setUser) {
+    console.log(
+      "Dispatching user with data",
+      result.data.token,
+      result.data.user,
+      addUser
+    );
     pageReload(true);
     dispatch(addUser({ token: result.data.token, profile: result.data.user }));
     setUser(result.data.user);

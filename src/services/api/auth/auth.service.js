@@ -2,10 +2,12 @@ import axios from "./../../axios";
 
 class AuthService {
   async signUp(body) {
+    console.log("authservice body", body);
     const response = await axios.post("/signup", body);
     return response;
   }
   async signIn(body) {
+    console.log("authservice  signin body", body);
     const response = await axios.post("/signin", body);
     return response;
   }

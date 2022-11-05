@@ -35,6 +35,7 @@ const Login = () => {
         username,
         password,
       });
+
       //store loggedIn user in store
       Utils.dispatchUser(result, pageReload, dispatch, setUser);
       // setUser(result.data.user);
