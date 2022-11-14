@@ -3,9 +3,22 @@ import backgroundImage from "./../../../assets/images/background.jpg";
 import { useState } from "react";
 import Login from "../login/Login";
 import Register from "../register/Register";
+import useLocalStorage from "./../../../hooks/useLocalStorage";
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+import { Utils } from "../../../services/utils/utils.service";
 
 const AuthTabs = () => {
   const [type, setType] = useState("Sign In");
+  const keepLoggedIn = useLocalStorage("keepLoggedIn", "get");
+  const [environment, setEnvironment] = useState();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const env = Utils.appEnvironment();
+    setEnvironment(env);
+    if (keepLoggedIn) navigate("/app/social/streams");
+  }, [keepLoggedIn, navigate]);
 
   return (
     <>
@@ -13,7 +26,7 @@ const AuthTabs = () => {
         className="container-wrapper"
         style={{ backgroundImage: `url(${backgroundImage})` }}
       >
-        <div className="environment">DEV</div>
+        <div className="environment">{environment}</div>
         <div className="container-wrapper-auth">
           <div className="tabs">
             <div className="tabs-auth">

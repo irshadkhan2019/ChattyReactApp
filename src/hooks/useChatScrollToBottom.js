@@ -20,7 +20,7 @@ export default useChatScrollToBottom;
 
 // const elementScrollRef = useChatScrollToBottom(list);
 // list.push(8)
-// everytime a new element is oushed in arr prop changes abd useEffect is ran so,the element to which ref
+// everytime a new element is pushed in arr prop changes and useEffect is ran so,the element to which ref
 // is attached is scrolled to bottm to display the new pushed element .
 // list.push(9)
 // <div ref={elementScrollRef}></div>;

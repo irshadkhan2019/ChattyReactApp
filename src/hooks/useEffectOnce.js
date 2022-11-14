@@ -4,7 +4,7 @@ const useEffectOnce = (callback) => {
   const calledOnce = useRef(false);
 
   useEffect(() => {
-    if (!calledOnce) {
+    if (!calledOnce.current) {
       callback();
       calledOnce.current = true;
     }

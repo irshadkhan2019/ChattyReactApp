@@ -16,7 +16,7 @@ const useDebounce = (value, delay) => {
 
 export default useDebounce;
 
-//USAGE while searching user we dont wont to make api calls
+//USAGE while searching user we dont want to make api calls
 //for every keypress instead we will wait for delay specified
 //after the last keypress and then make api call  to get user .
 

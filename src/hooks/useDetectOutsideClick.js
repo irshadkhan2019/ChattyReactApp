@@ -6,6 +6,7 @@ const useDetectOutsideClick = (ref, initialState) => {
   useEffect(() => {
     const onClick = (event) => {
       if (ref.current !== null && !ref.current.contains(event.target)) {
+        // console.log("outside clicked", event.target);
         setIsActive(!isActive);
       }
     };
@@ -27,4 +28,4 @@ export default useDetectOutsideClick;
 //USAGE ->pass ref of the dropdown/popup element with state as true  .
 //if its active i.e true then it attaches event listerner of mouse click .
 //when mouse click anywhere excpet the dropdown/popup element it closes i.e we  set
-//isActive false and after xecutiing useEffect clear the listerner for performance
+//isActive false and after xecuting useEffect clear the listener for performance
