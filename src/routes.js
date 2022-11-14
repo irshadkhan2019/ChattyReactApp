@@ -11,7 +11,9 @@ import Photos from "./pages/social/photos/Photos";
 import Notifications from "./pages/social/notifications/Notifications";
 import Profile from "./pages/social/profile/Profile";
 import ProtectedRoute from "./pages/ProtectedRoute";
-
+import Error from "./pages/error/Error";
+import { Suspense } from "react";
+import StreamsSkeleton from "./pages/social/streams/StreamsSkeleton";
 //every pages except auth are protected routes
 export const AppRouter = () => {
   const elements = useRoutes([
@@ -39,7 +41,13 @@ export const AppRouter = () => {
       children: [
         {
           path: "streams",
-          element: <Streams />,
+          element: (
+            //while still loading Streams display fallback component ie
+            //display StreamsSkeleton untill data is loaded in Streams
+            <Suspense fallback={<StreamsSkeleton />}>
+              <Streams />
+            </Suspense>
+          ),
         },
         {
           path: "chat/messages",
@@ -70,6 +78,10 @@ export const AppRouter = () => {
           element: <Profile />,
         },
       ],
+    },
+    {
+      path: "*",
+      element: <Error />,
     },
   ]);
 
