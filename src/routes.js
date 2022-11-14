@@ -1,19 +1,25 @@
 import { AuthTabs, ResetPassword, ForgotPassword } from "./pages/auth";
 import { useRoutes } from "react-router-dom";
 
-import Social from "./pages/social/Social";
-import Streams from "./pages/social/streams/Streams";
-import Chat from "./pages/social/chat/Chat";
-import People from "./pages/social/people/People";
-import Followers from "./pages/social/followers/Followers";
-import Following from "./pages/social/following/Following";
-import Photos from "./pages/social/photos/Photos";
-import Notifications from "./pages/social/notifications/Notifications";
-import Profile from "./pages/social/profile/Profile";
 import ProtectedRoute from "./pages/ProtectedRoute";
 import Error from "./pages/error/Error";
-import { Suspense } from "react";
+import { Suspense, lazy } from "react";
 import StreamsSkeleton from "./pages/social/streams/StreamsSkeleton";
+
+//Load component when needed via lazy callback dynamically
+const Social = lazy(() => import("./pages/social/Social"));
+const Chat = lazy(() => import("./pages/social/chat/Chat"));
+const Followers = lazy(() => import("./pages/social/followers/Followers"));
+const Following = lazy(() => import("./pages/social/following/Following"));
+const Notification = lazy(() =>
+  import("./pages/social/notifications/Notifications")
+);
+const People = lazy(() => import("./pages/social/people/People"));
+const Photos = lazy(() => import("./pages/social/photos/Photos"));
+
+const Profile = lazy(() => import("./pages/social/profile/Profile"));
+const Streams = lazy(() => import("./pages/social/streams/Streams"));
+
 //every pages except auth are protected routes
 export const AppRouter = () => {
   const elements = useRoutes([
@@ -51,37 +57,69 @@ export const AppRouter = () => {
         },
         {
           path: "chat/messages",
-          element: <Chat />,
+          element: (
+            <Suspense>
+              <Chat />
+            </Suspense>
+          ),
         },
         {
           path: "people",
-          element: <People />,
+          element: (
+            <Suspense>
+              <People />
+            </Suspense>
+          ),
         },
         {
           path: "followers",
-          element: <Followers />,
+          element: (
+            <Suspense>
+              <Followers />
+            </Suspense>
+          ),
         },
         {
           path: "following",
-          element: <Following />,
+          element: (
+            <Suspense>
+              <Following />
+            </Suspense>
+          ),
         },
         {
           path: "photos",
-          element: <Photos />,
+          element: (
+            <Suspense>
+              <Photos />
+            </Suspense>
+          ),
         },
         {
           path: "notifications",
-          element: <Notifications />,
+          element: (
+            <Suspense>
+              <Notification />
+            </Suspense>
+          ),
         },
         {
           path: "profile/:username",
-          element: <Profile />,
+          element: (
+            <Suspense>
+              <Profile />
+            </Suspense>
+          ),
         },
       ],
     },
     {
       path: "*",
-      element: <Error />,
+      element: (
+        <Suspense>
+          <Error />
+        </Suspense>
+      ),
     },
   ]);
 
