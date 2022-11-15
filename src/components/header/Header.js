@@ -65,8 +65,8 @@ const Header = () => {
         deleteSessionPageReload,
         setLoggedIn,
       });
-      navigate("/");
       await userService.logoutUser(); //not working ...check
+      navigate("/");
     } catch (error) {
       console.log(error);
     }

@@ -8,7 +8,7 @@ class UserService {
   }
   async logoutUser() {
     console.log("user logged out");
-    const response = await axios.get("/logout");
+    const response = await axios.get("/signout");
     console.log(response);
     return response;
   }
