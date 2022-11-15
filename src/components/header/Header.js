@@ -65,10 +65,14 @@ const Header = () => {
         deleteSessionPageReload,
         setLoggedIn,
       });
-      await userService.logoutUser(); //not working ...check
+      await userService.logoutUser();
+      Utils.dispatchNotification("logOut Successfull", "success", dispatch);
       navigate("/");
     } catch (error) {
-      console.log(error);
+      //send toast error notification
+      const message = error.response.data.message;
+      const type = "error";
+      Utils.dispatchNotification(message, type, dispatch);
     }
   };
 

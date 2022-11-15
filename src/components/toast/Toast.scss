@@ -59,12 +59,15 @@
 
     .toast-notification-message {
       grid-area: message;
-      overflow-y: scroll;
+
       max-height: 70px;
       margin: 0;
       text-align: left;
       margin-left: -1px;
       word-wrap: break-word;
+      &:hover {
+        overflow-y: scroll;
+      }
     }
 
     .toast-icon {

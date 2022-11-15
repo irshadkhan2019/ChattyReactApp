@@ -43,6 +43,7 @@ const Login = () => {
       setStoredUsername(username);
       setHasError(false);
       setAlertType("alert-success");
+      Utils.dispatchNotification(`Welcome ${username}`, "success", dispatch);
     } catch (error) {
       setLoading(false);
       setHasError(true);

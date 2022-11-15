@@ -2,11 +2,14 @@ import PropTypes from "prop-types";
 import { useEffect, useCallback, useRef, useState } from "react";
 import { cloneDeep } from "lodash";
 import "./Toast.scss";
+import { Utils } from "../../services/utils/utils.service";
+import { useDispatch } from "react-redux";
 
 const Toast = (props) => {
   const { toastList, position, autoDelete, autoDeleteTime = 2000 } = props;
   const [list, setList] = useState(toastList);
   const listData = useRef([]);
+  const dispatch = useDispatch();
   console.log(listData);
 
   const deleteToast = useCallback(() => {
@@ -16,9 +19,10 @@ const Toast = (props) => {
     console.log(listData);
     if (!listData.current.length) {
       list.length = 0;
-      //dispatch notification
+      //dispatch clear notification
+      Utils.dispatchClearNotification(dispatch);
     }
-  }, [list]);
+  }, [list, dispatch]);
 
   useEffect(() => {
     setList([...toastList]);
@@ -34,7 +38,7 @@ const Toast = (props) => {
       const interval = setInterval(tick, autoDeleteTime);
       return () => clearInterval(interval);
     }
-  }, [toastList,autoDelete,autoDeleteTime,list,deleteToast]);
+  }, [toastList, autoDelete, autoDeleteTime, list, deleteToast]);
 
   return (
     <div className={`toast-notification-container ${position}`}>

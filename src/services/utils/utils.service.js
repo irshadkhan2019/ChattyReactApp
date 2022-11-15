@@ -1,5 +1,9 @@
 import { floor, random } from "lodash";
 import {
+  addNotification,
+  clearNotification,
+} from "../../redux-toolkit/reducers/notifications/notification.reducer";
+import {
   addUser,
   clearUser,
 } from "../../redux-toolkit/reducers/user/user.reducer";
@@ -52,9 +56,19 @@ export class Utils {
     setLoggedIn,
   }) {
     dispatch(clearUser());
+    //clear notifications when logging out
+    dispatch(clearNotification());
     deleteStorageUsername();
     deleteSessionPageReload();
     setLoggedIn(false);
+  }
+
+  static dispatchClearNotification(dispatch) {
+    dispatch(clearNotification());
+  }
+
+  static dispatchNotification(message, type, dispatch) {
+    dispatch(addNotification({ message, type }));
   }
 
   static appEnvironment() {
