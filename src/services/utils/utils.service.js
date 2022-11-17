@@ -98,4 +98,12 @@ export class Utils {
     }
     return result;
   }
+
+  static appImageUrl(version, id) {
+    if (typeof version === "string" && typeof id === "string") {
+      version = version.replace(/['"]+/g, "");
+      id = id.replace(/['"]+/g, "");
+    }
+    return `https://res.cloudinary.com/dnslnpn4l/image/upload/v${version}/${id}`;
+  }
 } //eoc

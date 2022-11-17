@@ -1,6 +1,8 @@
-import { cloneDeep, find, findIndex, remove } from "lodash";
+import { cloneDeep, find, findIndex, remove, sumBy } from "lodash";
 import { notificationService } from "../api/notifications/notification.service";
 import { socketService } from "./../sockets/socket.service";
+import { timeAgo } from "./timeago.utils";
+import { Utils } from "./utils.service";
 export class NotificationUtils {
   static socketIONotification(
     profile,
@@ -24,6 +26,14 @@ export class NotificationUtils {
           notifications = [...notifications, ...notificationsData];
           if (type === "notificationPage") {
             setNotification(notifications);
+          } else {
+            //for dropdown notification case
+            const mappedNotifications =
+              NotificationUtils.mapNotificationDropdownItems(
+                notifications,
+                setNotificationsCount
+              );
+            setNotification(mappedNotifications);
           }
         }
       }
@@ -52,6 +62,14 @@ export class NotificationUtils {
         notifications.splice(index, 1, notificationData);
         if (type === "notificationPage") {
           setNotification(notifications);
+        } else {
+          //for dropdown notification case
+          const mappedNotifications =
+            NotificationUtils.mapNotificationDropdownItems(
+              notifications,
+              setNotificationsCount
+            );
+          setNotification(mappedNotifications);
         }
       }
     });
@@ -68,11 +86,85 @@ export class NotificationUtils {
 
       if (type === "notificationPage") {
         setNotification(notifications);
+      } else {
+        //for dropdown notification case
+        const mappedNotifications =
+          NotificationUtils.mapNotificationDropdownItems(
+            notifications,
+            setNotificationsCount
+          );
+        setNotification(mappedNotifications);
       }
     });
   } //eof
 
-  static async markMessageAsRead(notificationId) {
+  static mapNotificationDropdownItems(notificationData, setNotificationsCount) {
+    const items = [];
+    for (const notification of notificationData) {
+      const item = {
+        _id: notification?._id,
+        topText: notification?.topText
+          ? notification?.topText
+          : notification?.message,
+        subText: timeAgo.transform(notification?.createdAt),
+        createdAt: notification?.createdAt,
+        username: notification?.userFrom
+          ? notification?.userFrom.username
+          : notification?.username,
+        avatarColor: notification?.userFrom
+          ? notification?.userFrom.avatarColor
+          : notification?.avatarColor,
+        profilePicture: notification?.userFrom
+          ? notification?.userFrom.profilePicture
+          : notification?.profilePicture,
+        read: notification?.read,
+        post: notification?.post,
+        imgUrl: notification?.imgId
+          ? Utils.appImageUrl(notification?.imgVersion, notification?.imgId)
+          : notification?.gifUrl
+          ? notification?.gifUrl
+          : notification?.imgUrl,
+        comment: notification?.comment,
+        reaction: notification?.reaction,
+        senderName: notification?.userFrom
+          ? notification?.userFrom.username
+          : notification?.username,
+        notificationType: notification?.notificationType,
+      };
+      items.push(item);
+    }
+
+    //get count of unread notification
+    const count = sumBy(items, (notification) => {
+      return notification.read ? 0 : 1;
+    });
+    setNotificationsCount(count);
+    return items;
+  }
+
+  static async markMessageAsRead(
+    notificationId,
+    notification,
+    setNotificationDialogueContent
+  ) {
+    //for comment and reaction notification popup
+    if (notification.notificationType !== "follows") {
+      const notificationDialog = {
+        createdAt: notification?.createdAt,
+        post: notification?.post,
+        imgUrl: notification?.imgId
+          ? Utils.appImageUrl(notification?.imgVersion, notification?.imgId)
+          : notification?.gifUrl
+          ? notification?.gifUrl
+          : notification?.imgUrl,
+        comment: notification?.comment,
+        reaction: notification?.reaction,
+        senderName: notification?.userFrom
+          ? notification?.userFrom.username
+          : notification?.username,
+      };
+      setNotificationDialogueContent(notificationDialog);
+    }
     await notificationService.markNotficationAsRead(notificationId);
   }
 } //eoc

@@ -7,10 +7,19 @@ import { Utils } from "../../../services/utils/utils.service";
 import Avatar from "./../../../components/avatar/Avatar";
 import useEffectOnce from "./../../../hooks/useEffectOnce";
 import "./Notifications.scss";
+import NotificationPreview from "./../../../components/dialog/NotificationPreview";
 const Notifications = () => {
   const { profile } = useSelector((state) => state.user);
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [notificationDialogueContent, setNotificationDialogueContent] =
+    useState({
+      post: "",
+      imgUrl: "",
+      comment: "",
+      reaction: "",
+      senderName: "",
+    });
   const dispatch = useDispatch();
 
   //initialize notfications
@@ -44,9 +53,13 @@ const Notifications = () => {
   }, [profile, notifications]);
 
   //when clicked on notifi mark it as read
-  const markAsRead = async (notificationId) => {
+  const markAsRead = async (notification) => {
     try {
-      const response = NotificationUtils.markMessageAsRead(notificationId);
+      const response = NotificationUtils.markMessageAsRead(
+        notification?._id,
+        notification,
+        setNotificationDialogueContent
+      );
     } catch (error) {
       Utils.dispatchNotification(
         error.response.data.message,
@@ -72,8 +85,29 @@ const Notifications = () => {
       );
     }
   };
+
   return (
     <>
+      {notificationDialogueContent?.senderName && (
+        <NotificationPreview
+          title={`Tour Post`}
+          post={notificationDialogueContent.post}
+          imgUrl={notificationDialogueContent.imgUrl}
+          comment={notificationDialogueContent.comment}
+          reaction={notificationDialogueContent.reaction}
+          senderName={notificationDialogueContent.senderName}
+          secondButtonText="Close"
+          secondBtnHandler={() => {
+            setNotificationDialogueContent({
+              post: "",
+              imgUrl: "",
+              comment: "",
+              reaction: "",
+              senderName: "",
+            });
+          }}
+        />
+      )}
       <div className="notifications-container">
         <div className="notifications">Notifications</div>
         {/* display all notifi if len >0 */}
@@ -84,7 +118,7 @@ const Notifications = () => {
                 className="notification-box"
                 data-testid="notification-box"
                 key={index}
-                onClick={() => markAsRead(notification?._id)}
+                onClick={() => markAsRead(notification)}
               >
                 <div className="notification-box-sub-card">
                   <div className="notification-box-sub-card-media">
