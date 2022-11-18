@@ -1,4 +1,4 @@
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Avatar from "./../../avatar/Avatar";
 import Input from "./../../inputs/Input";
 import photo from "./../../../assets/images/photo.png";
@@ -6,9 +6,17 @@ import gif from "./../../../assets/images/gif.png";
 import feeling from "./../../../assets/images/feeling.png";
 
 import "./PostForm.scss";
+import { openModal } from "../../../redux-toolkit/reducers/modal/modal.reducer";
+import AddPost from "../post-modal/post-add/AddPost";
 
 const PostForm = () => {
   const { profile } = useSelector((state) => state.user);
+  const { type, isOpen } = useSelector((state) => state.modal);
+  const dispatch = useDispatch();
+
+  const openPostmodal = () => {
+    dispatch(openModal({ type: "add" }));
+  };
   return (
     <>
       <div className="post-form" data-testid="post-form">
@@ -17,7 +25,11 @@ const PostForm = () => {
             <h4 className="post-form-title">Create Post</h4>
           </div>
           <div className="post-form-body">
-            <div className="post-form-input-body" data-testid="input-body">
+            <div
+              className="post-form-input-body"
+              data-testid="input-body"
+              onClick={() => openPostmodal()}
+            >
               <Avatar
                 name={profile?.username}
                 bgColor={profile?.avatarColor}
@@ -46,6 +58,8 @@ const PostForm = () => {
           </div>
         </div>
       </div>
+      {/* DISPLAY ADD POST MODAL */}
+      {isOpen && type === "add" && <AddPost />}
     </>
   );
 };
