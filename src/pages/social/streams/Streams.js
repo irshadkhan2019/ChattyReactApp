@@ -4,6 +4,7 @@ import Suggestions from "../../../components/suggestions/Suggestions";
 import { useDispatch } from "react-redux";
 import { getUserSuggestions } from "../../../redux-toolkit/api/suggestion";
 import useEffectOnce from "./../../../hooks/useEffectOnce";
+import PostForm from "../../../components/posts/post-form/PostForm";
 
 const Streams = () => {
   const bodyRef = useRef();
@@ -22,7 +23,9 @@ const Streams = () => {
           ref={bodyRef}
           style={{ backgroundColor: "#fff" }}
         >
-          <div>Post Form </div>
+          <div>
+            <PostForm />
+          </div>
           <div>Post items</div>
           <div
             ref={bottomLineRef}
