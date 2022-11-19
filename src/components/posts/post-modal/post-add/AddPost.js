@@ -7,12 +7,36 @@ import "./AddPost.scss";
 import { bgColors } from "./../../../../services/utils/static.data";
 import ModalBoxSelection from "./../modal-box-content/ModalBoxSelection";
 import Button from "./../../../button/Button";
+import { PostUtils } from "../../../../services/utils/post-utils.service";
 
 const AddPost = () => {
   const { gifModalIsOpen } = useSelector((state) => state.modal);
   const [loading] = useState();
   const [postImage] = useState("");
   const [allowedNumberOfCharacters] = useState("100/100");
+  const [textAreaBackground, setTextAreaBackground] = useState("#ffffff");
+  const [postData, setPostData] = useState({
+    post: "",
+    bgColor: textAreaBackground,
+    privacy: "",
+    feelings: "",
+    gifUrl: "",
+    profilePicture: "",
+    image: "",
+  });
+
+  const [disable, setDisable] = useState(false);
+
+  const selectBackground = (bgColor) => {
+    PostUtils.selectBackground(
+      bgColor,
+      postData,
+      setTextAreaBackground,
+      setPostData,
+      setDisable
+    );
+  };
+
   return (
     <>
       <PostWrapper>
@@ -38,8 +62,17 @@ const AddPost = () => {
             {/* If user does'nt upload image  */}
             {!postImage && (
               <>
-                <div className="modal-box-form" data-testid="modal-box-form">
-                  <div className="main">
+                <div
+                  className="modal-box-form"
+                  data-testid="modal-box-form"
+                  style={{ background: `${textAreaBackground}` }}
+                >
+                  <div
+                    className="main"
+                    style={{
+                      margin: textAreaBackground !== "#ffffff" ? "0 auto" : "",
+                    }}
+                  >
                     <div className="flex-row">
                       {/* user input text for post */}
                       <div
@@ -47,7 +80,11 @@ const AddPost = () => {
                         name="post"
                         contentEditable={true}
                         data-placeholder="What's on your mind?...."
-                        className="editable"
+                        className={`editable flex-item ${
+                          textAreaBackground !== "#ffffff"
+                            ? "textinputColor"
+                            : ""
+                        }`}
                       ></div>
                     </div>
                   </div>
@@ -96,6 +133,7 @@ const AddPost = () => {
                       color === "#ffffff" ? "whiteColorBorder" : ""
                     }`}
                     style={{ backgroundColor: `${color}` }}
+                    onClick={() => selectBackground(color)}
                   ></li>
                 ))}
               </ul>
