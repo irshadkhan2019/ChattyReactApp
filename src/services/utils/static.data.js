@@ -114,12 +114,12 @@ export const fontAwesomeIcons = {
 export const privacyList = [
   {
     topText: "Public",
-    subText: "Anyone on SocialApp",
+    subText: "Anyone on Chatty",
     icon: <FaGlobe className="globe-icon globe" />,
   },
   {
     topText: "Followers",
-    subText: "Your followers on SocialApp",
+    subText: "Your followers on Chatty",
     icon: <FaUserCheck className="globe-icon globe" />,
   },
   {

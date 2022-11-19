@@ -4,6 +4,7 @@ import { useDispatch } from "react-redux";
 import { updatePostItem } from "../../redux-toolkit/reducers/post/post.reducer";
 import "./SelectDropdown.scss";
 
+// FOR PRIVACY in POST creation
 const SelectDropdown = ({ isActive, setSelectedItem, items = [] }) => {
   const dropdownRef = useRef(null);
   const dispatch = useDispatch();
