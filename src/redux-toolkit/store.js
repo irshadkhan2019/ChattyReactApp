@@ -3,6 +3,7 @@ import userReducer from "./reducers/user/user.reducer";
 import suggestionReducer from "./reducers/suggestions/suggestions.reducer";
 import notificationReducer from "./reducers/notifications/notification.reducer";
 import modalReducer from "./reducers/modal/modal.reducer";
+import postReducer from "./reducers/post/post.reducer";
 
 export const store = configureStore({
   reducer: {
@@ -10,5 +11,6 @@ export const store = configureStore({
     suggestions: suggestionReducer,
     notifications: notificationReducer,
     modal: modalReducer,
+    post: postReducer,
   },
 });
