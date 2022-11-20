@@ -26,6 +26,7 @@ const AddPost = () => {
   });
 
   const [disable, setDisable] = useState(false);
+  const [selectedPostImage, setSelectedPostImage] = useState();
 
   const selectBackground = (bgColor) => {
     PostUtils.selectBackground(
@@ -143,7 +144,7 @@ const AddPost = () => {
               {allowedNumberOfCharacters}
             </span>
             {/* Display gif photo feeling option to select */}
-            <ModalBoxSelection />
+            <ModalBoxSelection setSelectedPostImage={setSelectedPostImage} />
 
             <div className="modal-box-button" data-testid="post-button">
               <Button

@@ -6,8 +6,10 @@ import useDetectOutsideClick from "./../../../../hooks/useDetectOutsideClick";
 import { useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Feelings from "../../../feelings/Feelings";
+import { ImageUtils } from "../../../../services/utils/image-utils.service";
+import PropTypes from "prop-types";
 
-const ModalBoxSelection = () => {
+const ModalBoxSelection = ({ setSelectedPostImage }) => {
   const { feelingIsOpen } = useSelector((state) => state.modal);
   const { post } = useSelector((state) => state.post);
   const feelingsRef = useRef(null);
@@ -25,7 +27,8 @@ const ModalBoxSelection = () => {
   };
 
   const handleFileChange = (event) => {
-    console.log(event.target.files[0]);
+    // console.log(event.target.files[0]);
+    ImageUtils.addFileToRedux(event, post, setSelectedPostImage, dispatch);
   };
 
   return (
@@ -74,4 +77,7 @@ const ModalBoxSelection = () => {
   );
 };
 
+ModalBoxSelection.propTypes = {
+  setSelectedPostImage: PropTypes.func,
+};
 export default ModalBoxSelection;
