@@ -30,10 +30,13 @@ const AddPost = () => {
   const [disable, setDisable] = useState(false);
   const [selectedPostImage, setSelectedPostImage] = useState();
   const counterRef = useRef(null);
+  const inputRef = useRef(null);
+  const imageInputRef = useRef(null);
 
   const dispatch = useDispatch();
 
   const maxNumberOfCharacters = 100;
+
   const selectBackground = (bgColor) => {
     console.log(selectedPostImage);
     PostUtils.selectBackground(
@@ -67,11 +70,28 @@ const AddPost = () => {
     }
   };
 
+  const clearImage = () => {
+    PostUtils.clearImage(
+      postData,
+      " ",
+      inputRef,
+      dispatch,
+      setSelectedPostImage,
+      setPostImage,
+      setDisable,
+      setPostData
+    );
+  };
+
   useEffect(() => {
+    console.log("change in img");
     if (gifUrl) {
       setPostImage(gifUrl);
+      //persist post text after an image/gif is selected
+      PostUtils.postInputData(imageInputRef, postData, "", setPostData);
     } else if (image) {
       setPostImage(image);
+      PostUtils.postInputData(imageInputRef, postData, "", setPostData);
     }
   }, [gifUrl, image]);
 
@@ -132,6 +152,10 @@ const AddPost = () => {
                           postInputEditable(e, e.currentTarget.textContent)
                         }
                         onKeyDown={onKeyDown}
+                        ref={(el) => {
+                          inputRef.current = el;
+                          inputRef?.current?.focus();
+                        }}
                       ></div>
                     </div>
                   </div>
@@ -150,11 +174,20 @@ const AddPost = () => {
                     contentEditable={true}
                     data-placeholder="What's on your mind?...."
                     className="post-input flex-item"
+                    onInput={(e) =>
+                      postInputEditable(e, e.currentTarget.textContent)
+                    }
+                    onKeyDown={onKeyDown}
+                    ref={(el) => {
+                      imageInputRef.current = el;
+                      imageInputRef?.current?.focus();
+                    }}
                   ></div>
                   <div className="image-display">
                     <div
                       className="image-delete-btn"
                       data-testid="image-delete-btn"
+                      onClick={() => clearImage()}
                     >
                       <FaTimes />
                     </div>
