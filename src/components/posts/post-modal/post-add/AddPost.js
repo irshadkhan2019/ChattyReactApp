@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useSelector } from "react-redux";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import PostWrapper from "../../modal-wrappers/post-wrapper/PostWrapper";
 import ModalBoxContent from "../modal-box-content/ModalBoxContent";
 import { FaTimes } from "react-icons/fa";
@@ -8,11 +8,13 @@ import { bgColors } from "./../../../../services/utils/static.data";
 import ModalBoxSelection from "./../modal-box-content/ModalBoxSelection";
 import Button from "./../../../button/Button";
 import { PostUtils } from "../../../../services/utils/post-utils.service";
+import { useRef } from "react";
 
 const AddPost = () => {
   const { gifModalIsOpen } = useSelector((state) => state.modal);
+  const { gifUrl, image } = useSelector((state) => state.post);
   const [loading] = useState();
-  const [postImage] = useState("");
+  const [postImage, setPostImage] = useState("");
   const [allowedNumberOfCharacters] = useState("100/100");
   const [textAreaBackground, setTextAreaBackground] = useState("#ffffff");
   const [postData, setPostData] = useState({
@@ -27,8 +29,13 @@ const AddPost = () => {
 
   const [disable, setDisable] = useState(false);
   const [selectedPostImage, setSelectedPostImage] = useState();
+  const counterRef = useRef(null);
 
+  const dispatch = useDispatch();
+
+  const maxNumberOfCharacters = 100;
   const selectBackground = (bgColor) => {
+    console.log(selectedPostImage);
     PostUtils.selectBackground(
       bgColor,
       postData,
@@ -37,6 +44,36 @@ const AddPost = () => {
       setDisable
     );
   };
+
+  const postInputEditable = (event, textContent) => {
+    console.log(textContent);
+    const currentTextlength = event.target.textContent.length;
+    const counter = maxNumberOfCharacters - currentTextlength;
+    counterRef.current.textContent = `${counter}/100`;
+
+    PostUtils.postInputEditable(textContent, postData, setPostData, setDisable);
+  };
+
+  const closePostModal = () => {
+    PostUtils.closePostModal(dispatch);
+  };
+
+  const onKeyDown = (event) => {
+    const currentTextlength = event.target.textContent.length;
+    if (currentTextlength === maxNumberOfCharacters && event.keyCode !== 8) {
+      //block keyboard except backspace char
+      console.log("reached max len");
+      event.preventDefault();
+    }
+  };
+
+  useEffect(() => {
+    if (gifUrl) {
+      setPostImage(gifUrl);
+    } else if (image) {
+      setPostImage(image);
+    }
+  }, [gifUrl, image]);
 
   return (
     <>
@@ -55,7 +92,12 @@ const AddPost = () => {
             )}
             <div className="modal-box-header">
               <h2> Create Post</h2>
-              <button className="modal-box-header-cancel">X</button>
+              <button
+                className="modal-box-header-cancel"
+                onClick={() => closePostModal()}
+              >
+                X
+              </button>
             </div>
             <hr />
             <ModalBoxContent />
@@ -86,6 +128,10 @@ const AddPost = () => {
                             ? "textinputColor"
                             : ""
                         }`}
+                        onInput={(e) =>
+                          postInputEditable(e, e.currentTarget.textContent)
+                        }
+                        onKeyDown={onKeyDown}
                       ></div>
                     </div>
                   </div>
@@ -115,7 +161,7 @@ const AddPost = () => {
                     <img
                       data-testid="post-image"
                       className="post-image"
-                      src=""
+                      src={`${postImage}`}
                       alt=""
                     />
                   </div>
@@ -140,7 +186,11 @@ const AddPost = () => {
               </ul>
             </div>
             {/* Set limit of characters */}
-            <span className="char_count" data-testid="allowed-number">
+            <span
+              className="char_count"
+              data-testid="allowed-number"
+              ref={counterRef}
+            >
               {allowedNumberOfCharacters}
             </span>
             {/* Display gif photo feeling option to select */}

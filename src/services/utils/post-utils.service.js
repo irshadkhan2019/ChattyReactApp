@@ -1,3 +1,6 @@
+import { closeModal } from "../../redux-toolkit/reducers/modal/modal.reducer";
+import { clearPost } from "../../redux-toolkit/reducers/post/post.reducer";
+
 export class PostUtils {
   static selectBackground(
     bgColor,
@@ -10,5 +13,16 @@ export class PostUtils {
     setTextAreaBackground(bgColor);
     setPostData(postData);
     setDisable(false);
+  }
+
+  static postInputEditable(textContent, postData, setPostData, setDisable) {
+    postData.post = textContent;
+    setPostData(postData);
+    setDisable(false);
+  }
+
+  static closePostModal(dispatch) {
+    dispatch(closeModal());
+    dispatch(clearPost());
   }
 }
