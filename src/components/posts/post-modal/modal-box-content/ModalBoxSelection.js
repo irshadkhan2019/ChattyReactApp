@@ -8,9 +8,10 @@ import { useDispatch, useSelector } from "react-redux";
 import Feelings from "../../../feelings/Feelings";
 import { ImageUtils } from "../../../../services/utils/image-utils.service";
 import PropTypes from "prop-types";
+import { toggleGifModal } from "../../../../redux-toolkit/reducers/modal/modal.reducer";
 
 const ModalBoxSelection = ({ setSelectedPostImage }) => {
-  const { feelingIsOpen } = useSelector((state) => state.modal);
+  const { feelingIsOpen, gifModalIsOpen } = useSelector((state) => state.modal);
   const { post } = useSelector((state) => state.post);
   const feelingsRef = useRef(null);
   const fileInputRef = useRef(null);
@@ -60,7 +61,11 @@ const ModalBoxSelection = ({ setSelectedPostImage }) => {
             />
             <img src={photo} alt="" /> Photo
           </li>
-          <li className="post-form-list-item">
+          {/* enable giphy modal to select gifs */}
+          <li
+            className="post-form-list-item"
+            onClick={() => dispatch(toggleGifModal(!gifModalIsOpen))}
+          >
             <img src={gif} alt="" /> Gif
           </li>
           {/* feelings dropdown secrion */}

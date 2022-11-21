@@ -41,7 +41,7 @@ const Giphy = () => {
               placeholder="Search Gif"
               className="giphy-container-picker-form-input"
               handleChange={(e) =>
-                GiphyUtils.searchGif(e.target.value, setGifs, setLoading)
+                GiphyUtils.searchGifs(e.target.value, setGifs, setLoading)
               }
             />
           </div>
