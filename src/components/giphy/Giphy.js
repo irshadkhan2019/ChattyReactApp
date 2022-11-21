@@ -5,6 +5,7 @@ import { toggleGifModal } from "../../redux-toolkit/reducers/modal/modal.reducer
 import { updatePostItem } from "../../redux-toolkit/reducers/post/post.reducer";
 import { GiphyUtils } from "../../services/utils/giphy-utils.service";
 import Input from "../inputs/Input";
+import Spinner from "../spinner/Spinner";
 
 import "./Giphy.scss";
 
@@ -45,6 +46,8 @@ const Giphy = () => {
               }
             />
           </div>
+
+          {loading && <Spinner />}
 
           <ul
             className="giphy-container-picker-list"
