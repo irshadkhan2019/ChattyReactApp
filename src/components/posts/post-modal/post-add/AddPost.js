@@ -11,8 +11,9 @@ import { PostUtils } from "../../../../services/utils/post-utils.service";
 import { useRef } from "react";
 import { toggleGifModal } from "../../../../redux-toolkit/reducers/modal/modal.reducer";
 import Giphy from "../../../giphy/Giphy";
+import PropTypes from "prop-types";
 
-const AddPost = () => {
+const AddPost = ({ selectedImage }) => {
   const { gifModalIsOpen } = useSelector((state) => state.modal);
   const { gifUrl, image } = useSelector((state) => state.post);
   const [loading] = useState();
@@ -259,6 +260,10 @@ const AddPost = () => {
       </PostWrapper>
     </>
   );
+};
+
+AddPost.prototype = {
+  selectedImage: PropTypes.string,
 };
 
 export default AddPost;
