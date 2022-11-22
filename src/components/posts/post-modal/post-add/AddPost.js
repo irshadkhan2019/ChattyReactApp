@@ -9,14 +9,22 @@ import ModalBoxSelection from "./../modal-box-content/ModalBoxSelection";
 import Button from "./../../../button/Button";
 import { PostUtils } from "../../../../services/utils/post-utils.service";
 import { useRef } from "react";
-import { toggleGifModal } from "../../../../redux-toolkit/reducers/modal/modal.reducer";
+import {
+  closeModal,
+  toggleGifModal,
+} from "../../../../redux-toolkit/reducers/modal/modal.reducer";
 import Giphy from "../../../giphy/Giphy";
 import PropTypes from "prop-types";
+import { ImageUtils } from "../../../../services/utils/image-utils.service";
+import { postService } from "../../../../services/api/post/post.service";
+import Spinner from "../../../spinner/Spinner";
+import { Utils } from "../../../../services/utils/utils.service";
 
 const AddPost = ({ selectedImage }) => {
-  const { gifModalIsOpen } = useSelector((state) => state.modal);
-  const { gifUrl, image } = useSelector((state) => state.post);
-  const [loading] = useState();
+  const { gifModalIsOpen, feeling } = useSelector((state) => state.modal);
+  const { gifUrl, image, privacy } = useSelector((state) => state.post);
+  const { profile } = useSelector((state) => state.user);
+  const [loading, setLoading] = useState();
   const [postImage, setPostImage] = useState("");
   const [allowedNumberOfCharacters] = useState("100/100");
   const [textAreaBackground, setTextAreaBackground] = useState("#ffffff");
@@ -31,6 +39,7 @@ const AddPost = ({ selectedImage }) => {
   });
 
   const [disable, setDisable] = useState(false);
+  const [apiResponse, setApiResponse] = useState(false);
   const [selectedPostImage, setSelectedPostImage] = useState();
   const counterRef = useRef(null);
   const inputRef = useRef(null);
@@ -86,6 +95,71 @@ const AddPost = ({ selectedImage }) => {
     );
   };
 
+  const createPost = async () => {
+    setLoading(!loading);
+    setDisable(!disable);
+
+    try {
+      if (Object.keys(feeling).length) {
+        //in modal feeling is object but in post we only need name
+        postData.feelings = feeling?.name;
+      }
+      postData.privacy = privacy || "Public";
+      postData.gifUrl = gifUrl;
+      postData.profilePicture = profile?.profilePicture;
+      if (selectedPostImage || selectedImage) {
+        //convert to base64 encoded string
+        let result = "";
+        if (selectedPostImage) {
+          result = await ImageUtils.readAsBase64(selectedPostImage);
+        }
+        if (selectedImage) {
+          result = await ImageUtils.readAsBase64(selectedImage);
+        }
+        const response = await PostUtils.sendPostWithImageRequest(
+          result,
+          postData,
+          imageInputRef,
+          setApiResponse,
+          setLoading,
+          setDisable,
+          dispatch
+        );
+        if (response && response.data.message) {
+          PostUtils.closePostModal(dispatch);
+          Utils.dispatchNotification(
+            response.data.message,
+            "success",
+            dispatch
+          );
+        }
+      } else {
+        //for just only post text/gif
+        console.log("data b4 post", postData);
+        const response = await postService.createPost(postData);
+        if (response) {
+          setApiResponse("success");
+          setLoading(false);
+          PostUtils.closePostModal(dispatch);
+          Utils.dispatchNotification(
+            response.data.message,
+            "success",
+            dispatch
+          );
+        }
+      }
+    } catch (error) {
+      PostUtils.dispatchNotification(
+        error.response.data.message,
+        "error",
+        setApiResponse,
+        setLoading,
+        setDisable,
+        dispatch
+      );
+    }
+  };
+
   useEffect(() => {
     console.log("change in img");
     if (gifUrl) {
@@ -98,19 +172,38 @@ const AddPost = ({ selectedImage }) => {
     }
   }, [gifUrl, image]);
 
+  useEffect(() => {
+    if (!loading && apiResponse == "success") {
+      dispatch(closeModal());
+    }
+  }, [loading, dispatch, apiResponse]);
+
   return (
     <>
       <PostWrapper>
         <div></div>
 
         {!gifModalIsOpen && (
-          <div className="modal-box">
+          <div
+            className="modal-box"
+            style={{
+              height:
+                selectedPostImage ||
+                gifUrl ||
+                image ||
+                postData?.gifUrl ||
+                postData?.image
+                  ? "700px"
+                  : "auto",
+            }}
+          >
             {loading && (
               <div
                 className="modal-box-loading"
                 data-testid="modal-box-loading"
               >
                 <span>Posting......</span>
+                <Spinner />
               </div>
             )}
             <div className="modal-box-header">
@@ -236,7 +329,8 @@ const AddPost = ({ selectedImage }) => {
               <Button
                 label={"Create post"}
                 className="post-button"
-                disabled={true}
+                disabled={disable}
+                handleClick={createPost}
               />
             </div>
           </div>
