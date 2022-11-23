@@ -6,8 +6,9 @@ const useInfiniteScroll = (bodyRef, bottomLineRef, callback) => {
     const { top: bottomLineTop } =
       bottomLineRef?.current?.getBoundingClientRect();
 
-    if (bottomLineRef <= containerHeight) {
+    if (bottomLineTop <= containerHeight) {
       //when we reach bottomlienref we call our api to fetch new posts
+      console.log("REACHED BOTTOM fetching new data");
       callback();
     }
   }, [bodyRef, bottomLineRef, callback]);

@@ -31,7 +31,7 @@ const Posts = ({ allposts, userFollowing, postsLoading }) => {
 
 Posts.propTypes = {
   allposts: PropTypes.array.isRequired,
-  userFolling: PropTypes.array.isRequired,
+  userFollowing: PropTypes.array.isRequired,
   postsLoading: PropTypes.bool,
 };
 

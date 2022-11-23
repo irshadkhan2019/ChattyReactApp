@@ -1,5 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { userService } from "../../services/api/user/user.service";
+import { Utils } from "../../services/utils/utils.service";
 import { fakeData } from "./fakeData";
 
 //create action creator using thunk
@@ -15,7 +16,11 @@ export const getUserSuggestions = createAsyncThunk(
       console.log(fakeData);
       return fakeData;
     } catch (error) {
-      console.log(error);
+      Utils.dispatchNotification(
+        error.response.data.message,
+        "error",
+        dispatch
+      );
     }
   }
 );

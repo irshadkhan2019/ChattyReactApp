@@ -2,6 +2,7 @@ import { find } from "lodash";
 import PropTypes from "prop-types";
 import { FaPencilAlt, FaRegTrashAlt } from "react-icons/fa";
 import { feelingsList, privacyList } from "../../../services/utils/static.data";
+import Avatar from "../../avatar/Avatar";
 import { timeAgo } from "./../../../services/utils/timeago.utils";
 import "./Post.scss";
 
@@ -14,6 +15,11 @@ const Post = ({ post, showIcons }) => {
   const getPrivacy = (type) => {
     const privacy = find(privacyList, (data) => data.topText === type);
     return privacy?.icon;
+  };
+
+  const getPostImage = (imgId, imgVersion) => {
+    const imageUrl = `https://res.cloudinary.com/dnslnpn4l/image/upload/v${imgVersion}/${imgId}.jpg`;
+    return imageUrl;
   };
 
   return (
@@ -86,7 +92,11 @@ const Post = ({ post, showIcons }) => {
 
               {post?.imgId && !post?.gifUrl && post.bgColor === "#ffffff" && (
                 <div data-testid="post-image" className="image-display-flex">
-                  <img className="post-image" src="" alt="" />
+                  <img
+                    className="post-image"
+                    src={getPostImage(post.imgId, post.imgVersion)}
+                    alt=""
+                  />
                 </div>
               )}
 
