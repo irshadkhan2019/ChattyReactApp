@@ -10,7 +10,7 @@ import { Utils } from "../../../services/utils/utils.service";
 import { postService } from "../../../services/api/post/post.service";
 import { useState } from "react";
 import { getPosts } from "../../../redux-toolkit/api/posts";
-import { uniqBy } from "lodash";
+import { floor, uniqBy } from "lodash";
 import useInfiniteScroll from "./../../../hooks/useInfiniteScroll";
 
 const Streams = () => {
@@ -28,26 +28,24 @@ const Streams = () => {
 
   function fetchPostData() {
     let pageNum = currentPage;
-    console.log("prev page no", pageNum);
-    if (currentPage <= Math.round(totalPostsCount / PAGE_SIZE)) {
+    if (currentPage <= floor(Math.round(totalPostsCount / PAGE_SIZE))) {
       pageNum += 1;
-      console.log("new page no", pageNum);
       setCurrentPage(pageNum);
+      //get subsequent post by pagination
+
       getAllPosts(pageNum);
     }
   }
 
   const getAllPosts = async (pageNum) => {
     try {
-      console.log("Getting new post with page ", pageNum);
       const response = await postService.getAllPosts(pageNum);
-
+      console.log("NEW REQ WAS MADE:", currentPage, pageNum, response);
       if (response?.data?.posts.length > 0) {
-        console.log("NEW POSTS", response?.data);
         appPosts = [...posts, ...response.data.posts];
-        console.log("getting posts", appPosts);
-        appPosts = uniqBy(appPosts, "_id"); //remove duplicate posts
-        setPosts(appPosts);
+        const newPosts = uniqBy(appPosts, "_id"); //remove duplicate posts
+        console.log(newPosts);
+        setPosts(newPosts);
       }
       setLoading(false);
     } catch (error) {
@@ -56,7 +54,6 @@ const Streams = () => {
         "error",
         dispatch
       );
-      // console.log(error);
     }
   };
   useEffectOnce(() => {
@@ -75,6 +72,7 @@ const Streams = () => {
 
   return (
     <div className="streams" data-testid="streams">
+      {console.log("Posts till now!", posts)}
       <div className="streams-content">
         <div
           className="streams-post"
@@ -92,7 +90,6 @@ const Streams = () => {
             style={{
               marginBottom: "50px",
               height: "50px",
-              backgroundColor: "red",
             }}
           ></div>
         </div>
