@@ -2,6 +2,7 @@ import PropTypes from "prop-types";
 import { useEffect } from "react";
 import { useState } from "react";
 import { useSelector } from "react-redux";
+import { PostUtils } from "../../services/utils/post-utils.service";
 import { Utils } from "../../services/utils/utils.service";
 import Post from "./post/Post";
 import "./Posts.scss";

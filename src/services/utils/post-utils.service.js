@@ -11,19 +11,16 @@ export class PostUtils {
     bgColor,
     postData,
     setTextAreaBackground,
-    setPostData,
-    setDisable
+    setPostData
   ) {
     postData.bgColor = bgColor;
     setTextAreaBackground(bgColor);
     setPostData(postData);
-    setDisable(false);
   }
 
-  static postInputEditable(textContent, postData, setPostData, setDisable) {
+  static postInputEditable(textContent, postData, setPostData) {
     postData.post = textContent;
     setPostData(postData);
-    setDisable(false);
   }
 
   static closePostModal(dispatch) {
@@ -38,14 +35,14 @@ export class PostUtils {
     dispatch,
     setSelectedPostImage,
     setPostImage,
-    setDisable,
+
     setPostData
   ) {
     postData.gifUrl = "";
     postData.image = "";
     setSelectedPostImage(null);
     setPostImage("");
-    setDisable(false);
+
     setTimeout(() => {
       //persist post text after an image/gif is deleted
       if (inputRef?.current) {
@@ -55,6 +52,7 @@ export class PostUtils {
         }
         setPostData(postData);
       }
+      PostUtils.positionCursor("editable");
     });
     dispatch(
       updatePostItem({ gifUrl: "", image: "", imgId: "", imgVersion: "" })
@@ -70,6 +68,7 @@ export class PostUtils {
           postData.post = post;
         }
         setPostData(postData);
+        PostUtils.positionCursor("editable");
       }
     });
   }
@@ -79,12 +78,12 @@ export class PostUtils {
     type,
     setApiResponse,
     setLoading,
-    setDisable,
+
     dispatch
   ) {
     setApiResponse(type);
     setLoading(false);
-    setDisable(false);
+
     Utils.dispatchNotification(message, type, dispatch);
   }
 
@@ -120,5 +119,26 @@ export class PostUtils {
         dispatch
       );
     }
+  }
+
+  static checkPrivacy(post, profile, following) {
+    const isPrivate =
+      post?.privacy === "Private" && post?.userId == profile?._id;
+    const isPublic = post?.privacy === "Public";
+    const isFollower =
+      post?.privacy === "Followers" &&
+      Utils.checkIfUserIsFollowed(following, post?.userId, profile?._id);
+    return isPrivate || isPublic || isFollower;
+  }
+
+  static positionCursor(elementId) {
+    const element = document.getElementById(`${elementId}`);
+    const selection = window.getSelection();
+    const range = document.createRange();
+    selection.removeAllRanges();
+    range.selectNodeContents(element);
+    range.collapse(false);
+    selection.addRange(range);
+    element.focus();
   }
 }

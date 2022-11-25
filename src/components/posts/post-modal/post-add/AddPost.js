@@ -38,7 +38,7 @@ const AddPost = ({ selectedImage }) => {
     image: "",
   });
 
-  const [disable, setDisable] = useState(false);
+  const [disable, setDisable] = useState(true);
   const [apiResponse, setApiResponse] = useState(false);
   const [selectedPostImage, setSelectedPostImage] = useState();
   const counterRef = useRef(null);
@@ -55,18 +55,17 @@ const AddPost = ({ selectedImage }) => {
       bgColor,
       postData,
       setTextAreaBackground,
-      setPostData,
-      setDisable
+      setPostData
     );
   };
 
   const postInputEditable = (event, textContent) => {
-    console.log(textContent);
+    // console.log(textContent);
     const currentTextlength = event.target.textContent.length;
     const counter = maxNumberOfCharacters - currentTextlength;
     counterRef.current.textContent = `${counter}/100`;
-
-    PostUtils.postInputEditable(textContent, postData, setPostData, setDisable);
+    setDisable(currentTextlength <= 0 && !postImage && !gifUrl);
+    PostUtils.postInputEditable(textContent, postData, setPostData);
   };
 
   const closePostModal = () => {
@@ -90,7 +89,6 @@ const AddPost = ({ selectedImage }) => {
       dispatch,
       setSelectedPostImage,
       setPostImage,
-      setDisable,
       setPostData
     );
   };
@@ -161,6 +159,9 @@ const AddPost = ({ selectedImage }) => {
   };
 
   useEffect(() => {
+    PostUtils.positionCursor("editable");
+  }, []);
+  useEffect(() => {
     console.log("change in img");
     if (gifUrl) {
       setPostImage(gifUrl);
@@ -176,7 +177,8 @@ const AddPost = ({ selectedImage }) => {
     if (!loading && apiResponse == "success") {
       dispatch(closeModal());
     }
-  }, [loading, dispatch, apiResponse]);
+    setDisable(postData.post.length <= 0 && !postImage && !gifUrl);
+  }, [loading, dispatch, apiResponse, postData, postImage, gifUrl]);
 
   return (
     <>
@@ -236,6 +238,7 @@ const AddPost = ({ selectedImage }) => {
                       {/* user input text for post */}
                       <div
                         data-testid="editable"
+                        id="editable"
                         name="post"
                         contentEditable={true}
                         data-placeholder="What's on your mind?...."
@@ -267,6 +270,7 @@ const AddPost = ({ selectedImage }) => {
                   <div
                     data-testid="post-editable"
                     name="post"
+                    id="editable"
                     contentEditable={true}
                     data-placeholder="What's on your mind?...."
                     className="post-input flex-item"
@@ -309,7 +313,10 @@ const AddPost = ({ selectedImage }) => {
                       color === "#ffffff" ? "whiteColorBorder" : ""
                     }`}
                     style={{ backgroundColor: `${color}` }}
-                    onClick={() => selectBackground(color)}
+                    onClick={() => {
+                      PostUtils.positionCursor("editable");
+                      selectBackground(color);
+                    }}
                   ></li>
                 ))}
               </ul>

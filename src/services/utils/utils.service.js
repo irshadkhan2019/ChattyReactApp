@@ -1,4 +1,4 @@
-import { floor, random } from "lodash";
+import { floor, random, some } from "lodash";
 import {
   addNotification,
   clearNotification,
@@ -105,5 +105,16 @@ export class Utils {
       id = id.replace(/['"]+/g, "");
     }
     return `https://res.cloudinary.com/dnslnpn4l/image/upload/v${version}/${id}`;
+  }
+
+  static checkIfUserIsBlocked(blocked, userId) {
+    return some(blocked, (id) => id === userId);
+  }
+
+  static checkIfUserIsFollowed(userFollowers, postCreatorId, userId) {
+    return some(
+      userFollowers,
+      (user) => user._id === postCreatorId || postCreatorId === userId
+    );
   }
 } //eoc
