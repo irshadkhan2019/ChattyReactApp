@@ -12,6 +12,7 @@ import { useState } from "react";
 import { getPosts } from "../../../redux-toolkit/api/posts";
 import { floor, uniqBy } from "lodash";
 import useInfiniteScroll from "./../../../hooks/useInfiniteScroll";
+import { PostUtils } from "../../../services/utils/post-utils.service";
 
 const Streams = () => {
   const { allPosts } = useSelector((state) => state);
@@ -70,6 +71,9 @@ const Streams = () => {
     setTotalPostsCount(allPosts?.totalPostsCount);
   }, [allPosts]);
 
+  useEffect(() => {
+    PostUtils.socketIOPost(posts, setPosts);
+  }, [posts]);
   return (
     <div className="streams" data-testid="streams">
       {console.log("Posts till now!", posts)}
