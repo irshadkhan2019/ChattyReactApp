@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import { FaPencilAlt, FaRegTrashAlt } from "react-icons/fa";
 import { feelingsList, privacyList } from "../../../services/utils/static.data";
 import Avatar from "../../avatar/Avatar";
+import PostCommentSection from "../post-comment-section/PostCommentSection";
 import { timeAgo } from "./../../../services/utils/timeago.utils";
 import "./Post.scss";
 
@@ -108,6 +109,7 @@ const Post = ({ post, showIcons }) => {
               {(post?.reactions.length > 0 || post?.commentsCount > 0) && (
                 <hr />
               )}
+              <PostCommentSection post={post} />
             </div>
           </div>
         </div>
