@@ -117,4 +117,9 @@ export class Utils {
       (user) => user._id === postCreatorId || postCreatorId === userId
     );
   }
+
+  static firstLetterUpperCase(word) {
+    if (!word) return "";
+    return `${word.charAt(0).toUpperCase()}${word.slice(1)}`;
+  }
 } //eoc
