@@ -21,6 +21,11 @@ class PostService {
     return response;
   }
 
+  async getPostReactions(postId) {
+    const response = await axios.get(`/post/reactions/${postId}`);
+    return response;
+  }
+
   async getSinglePostReactionByUsername(postId, username) {
     const response = await axios.get(
       `/post/single/reaction/username/${username}/${postId}`

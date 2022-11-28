@@ -5,7 +5,7 @@ import ReactionsAndCommentsDisplay from "../reactions/reactions-and-comments-dis
 const PostCommentSection = ({ post }) => {
   return (
     <div data-testid="comment-section">
-      <ReactionsAndCommentsDisplay />
+      <ReactionsAndCommentsDisplay post={post} />
       <CommentArea post={post} />
     </div>
   );

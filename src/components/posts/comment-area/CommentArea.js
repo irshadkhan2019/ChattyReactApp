@@ -92,12 +92,12 @@ const CommentArea = ({ post }) => {
         }
       }
     } catch (error) {
-      // Utils.dispatchNotification(
-      //   error?.response?.data?.message,
-      //   "error",
-      //   dispatch
-      // );
-      console.log(error);
+      Utils.dispatchNotification(
+        error?.response?.data?.message,
+        "error",
+        dispatch
+      );
+      // console.log(error);
     }
   };
 
