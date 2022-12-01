@@ -14,6 +14,7 @@ const ReactionsAndCommentsDisplay = ({ post }) => {
   const { reactionsModalIsOpen } = useSelector((state) => state.modal);
   const [postReactions, setPostReactions] = useState([]);
   const [reactions, setReactions] = useState([]);
+  const [postCommentNames, setPostCommentNames] = useState([]);
   const dispatch = useDispatch();
 
   //get post reaction fro reactions schema
@@ -21,6 +22,20 @@ const ReactionsAndCommentsDisplay = ({ post }) => {
     try {
       const response = await postService.getPostReactions(post._id);
       setPostReactions(response?.data?.reactions);
+    } catch (error) {
+      Utils.dispatchNotification(
+        error?.response?.data?.message,
+        "error",
+        dispatch
+      );
+    }
+  };
+
+  const getPostCommentNames = async () => {
+    try {
+      const response = await postService.getPostCommentsNames(post._id);
+      console.log(response);
+      setPostCommentNames([...new Set(response?.data?.comments?.names)]);
     } catch (error) {
       Utils.dispatchNotification(
         error?.response?.data?.message,
@@ -128,7 +143,7 @@ const ReactionsAndCommentsDisplay = ({ post }) => {
                   )}
                   {postReactions.length && (
                     <>
-                      {postReactions.map((postReaction) => (
+                      {postReactions.slice(0, 19).map((postReaction) => (
                         <span key={Utils.generateString(10)}>
                           {postReaction?.username}
                         </span>
@@ -147,17 +162,35 @@ const ReactionsAndCommentsDisplay = ({ post }) => {
           className="comment tooltip-container"
           data-testid="comment-container"
         >
-          <span data-testid="comment-count">20 Comments</span>
+          {post?.commentsCount > 0 && (
+            <span
+              data-testid="comment-count"
+              onMouseEnter={getPostCommentNames}
+            >
+              {Utils.shortenLargeNumbers(post?.commentsCount)}{" "}
+              {`${post?.commentsCount === 1 ? " Comment" : " Comments"}`}
+            </span>
+          )}
+
           <div
             className="tooltip-container-text tooltip-container-comments-bottom"
             data-testid="comment-tooltip"
           >
             <div className="likes-block-icons-list">
-              <FaSpinner className="circle-notch" />
-              <div>
-                <span>Stan</span>
-                <span>and 50 others...</span>
-              </div>
+              {postCommentNames.length === 0 && (
+                <FaSpinner className="circle-notch" />
+              )}
+
+              {postCommentNames.length && (
+                <>
+                  {postCommentNames.slice(0, 19).map((names) => (
+                    <span key={Utils.generateString(10)}>{names}</span>
+                  ))}
+                  {postCommentNames.length > 20 && (
+                    <span>and {postCommentNames.length - 20} others...</span>
+                  )}
+                </>
+              )}
             </div>
           </div>
         </div>
