@@ -60,7 +60,7 @@ const AddPost = ({ selectedImage }) => {
   };
 
   const postInputEditable = (event, textContent) => {
-    // console.log(textContent);
+    console.log(textContent);
     const currentTextlength = event.target.textContent.length;
     const counter = maxNumberOfCharacters - currentTextlength;
     counterRef.current.textContent = `${counter}/100`;
@@ -105,6 +105,8 @@ const AddPost = ({ selectedImage }) => {
       postData.privacy = privacy || "Public";
       postData.gifUrl = gifUrl;
       postData.profilePicture = profile?.profilePicture;
+
+      //if user selects post Image
       if (selectedPostImage || selectedImage) {
         //convert to base64 encoded string
         let result = "";
@@ -115,7 +117,7 @@ const AddPost = ({ selectedImage }) => {
           result = await ImageUtils.readAsBase64(selectedImage);
         }
         const response = await PostUtils.sendPostWithImageRequest(
-          result,
+          result, //its image base64 string
           postData,
           imageInputRef,
           setApiResponse,
@@ -134,6 +136,7 @@ const AddPost = ({ selectedImage }) => {
       } else {
         //for just only post text/gif
         console.log("data b4 post", postData);
+
         const response = await postService.createPost(postData);
         if (response) {
           setApiResponse("success");
@@ -161,6 +164,7 @@ const AddPost = ({ selectedImage }) => {
   useEffect(() => {
     PostUtils.positionCursor("editable");
   }, []);
+
   useEffect(() => {
     console.log("change in img");
     if (gifUrl) {
@@ -177,14 +181,17 @@ const AddPost = ({ selectedImage }) => {
     if (!loading && apiResponse == "success") {
       dispatch(closeModal());
     }
+    //submit btn disabled if ..
     setDisable(postData.post.length <= 0 && !postImage && !gifUrl);
   }, [loading, dispatch, apiResponse, postData, postImage, gifUrl]);
 
   return (
     <>
       <PostWrapper>
+        {/* child 1 */}
         <div></div>
 
+        {/* child 2 */}
         {!gifModalIsOpen && (
           <div
             className="modal-box"
@@ -247,11 +254,13 @@ const AddPost = ({ selectedImage }) => {
                             ? "textinputColor"
                             : ""
                         }`}
-                        onInput={(e) =>
-                          postInputEditable(e, e.currentTarget.textContent)
-                        }
+                        onInput={(e) => {
+                          // console.log("on Input", e);
+                          postInputEditable(e, e.currentTarget.textContent);
+                        }}
                         onKeyDown={onKeyDown}
                         ref={(el) => {
+                          // console.log("el", el);
                           inputRef.current = el;
                           inputRef?.current?.focus();
                         }}
@@ -317,7 +326,9 @@ const AddPost = ({ selectedImage }) => {
                       PostUtils.positionCursor("editable");
                       selectBackground(color);
                     }}
-                  ></li>
+                  >
+                    {/* {console.log("current Post Data", postData)} */}
+                  </li>
                 ))}
               </ul>
             </div>
@@ -329,6 +340,7 @@ const AddPost = ({ selectedImage }) => {
             >
               {allowedNumberOfCharacters}
             </span>
+
             {/* Display gif photo feeling option to select */}
             <ModalBoxSelection setSelectedPostImage={setSelectedPostImage} />
 
@@ -342,6 +354,8 @@ const AddPost = ({ selectedImage }) => {
             </div>
           </div>
         )}
+
+        {/* child 3 */}
 
         {gifModalIsOpen && (
           <div className="modal-giphy" data-testid="modal-giphy">

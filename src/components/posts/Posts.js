@@ -7,7 +7,7 @@ import { Utils } from "../../services/utils/utils.service";
 import Post from "./post/Post";
 import "./Posts.scss";
 
-const Posts = ({ allposts, userFollowing, postsLoading }) => {
+const Posts = ({ allposts, postsLoading, userFollowing }) => {
   const { profile } = useSelector((state) => state.user);
   const [posts, setPosts] = useState([]);
   const [following, setFollowing] = useState([]);

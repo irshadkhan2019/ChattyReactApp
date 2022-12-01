@@ -21,6 +21,7 @@ export class PostUtils {
   }
 
   static postInputEditable(textContent, postData, setPostData) {
+    // console.log("setting postInputEditable postData", postData);
     postData.post = textContent;
     setPostData(postData);
   }
@@ -184,13 +185,13 @@ export class PostUtils {
     });
   }
 
-  static updateSinglePost(posts, post, setPosts) {
+  static updateSinglePost(posts, updatedPost, setPosts) {
     posts = cloneDeep(posts);
     // const index = findIndex(posts, (data) => data._id === post._id); OR
-    const index = findIndex(posts, ["_id", post?._id]);
+    const index = findIndex(posts, ["_id", updatedPost?._id]);
     if (index > -1) {
       //update posts arr with 1 new post at index =index
-      posts.splice(index, 1, post);
+      posts.splice(index, 1, updatedPost);
       setPosts(posts);
     }
   }

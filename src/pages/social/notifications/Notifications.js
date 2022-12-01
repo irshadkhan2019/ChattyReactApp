@@ -8,6 +8,7 @@ import Avatar from "./../../../components/avatar/Avatar";
 import useEffectOnce from "./../../../hooks/useEffectOnce";
 import "./Notifications.scss";
 import NotificationPreview from "./../../../components/dialog/NotificationPreview";
+import { timeAgo } from "../../../services/utils/timeago.utils";
 const Notifications = () => {
   const { profile } = useSelector((state) => state.user);
   const [notifications, setNotifications] = useState([]);
@@ -152,7 +153,9 @@ const Notifications = () => {
                             <FaRegCircle className="icon" />
                           )}
                         </small>
-                        <p className="subtext">1 hr ago</p>
+                        <p className="subtext">
+                          {timeAgo.transform(notification?.createdAt)}
+                        </p>
                       </div>
                     </div>
                   </div>

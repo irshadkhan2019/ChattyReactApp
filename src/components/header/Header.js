@@ -95,6 +95,7 @@ const Header = () => {
   const getUserNotifications = async () => {
     try {
       const response = await notificationService.getUserNotifications();
+
       //need transformed notification in dropdown
       const mappedNotifications =
         NotificationUtils.mapNotificationDropdownItems(

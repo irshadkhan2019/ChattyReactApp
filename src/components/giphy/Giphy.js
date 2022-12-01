@@ -58,7 +58,10 @@ const Giphy = () => {
                 className="giphy-container-picker-list-item"
                 data-testid="list-item"
                 key={index}
-                onClick={() => selectGif(gif.images.original.url)}
+                onClick={() => {
+                  // console.log(gif);
+                  selectGif(gif.images.original.url);
+                }}
               >
                 <img
                   style={{ width: "470px" }}

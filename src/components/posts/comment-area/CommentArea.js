@@ -161,6 +161,7 @@ const CommentArea = ({ post }) => {
     };
     socketService?.socket?.emit("reaction", socketReactionData);
   };
+
   useEffect(() => {
     selectedUserReaction(reactions);
   }, [selectedUserReaction, reactions]);

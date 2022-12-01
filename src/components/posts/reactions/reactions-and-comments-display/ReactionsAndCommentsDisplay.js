@@ -1,7 +1,9 @@
 import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import { FaSpinner } from "react-icons/fa";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { toggleReactionsModal } from "../../../../redux-toolkit/reducers/modal/modal.reducer";
+import { updatePostItem } from "../../../../redux-toolkit/reducers/post/post.reducer";
 import { postService } from "../../../../services/api/post/post.service";
 import { reactionsMap } from "../../../../services/utils/static.data";
 import { Utils } from "../../../../services/utils/utils.service";
@@ -9,10 +11,12 @@ import like from "./../../../../assets/reactions/love.png";
 import "./ReactionsAndCommentsDisplay.scss";
 
 const ReactionsAndCommentsDisplay = ({ post }) => {
+  const { reactionsModalIsOpen } = useSelector((state) => state.modal);
   const [postReactions, setPostReactions] = useState([]);
   const [reactions, setReactions] = useState([]);
   const dispatch = useDispatch();
 
+  //get post reaction fro reactions schema
   const getPostReactions = async () => {
     try {
       const response = await postService.getPostReactions(post._id);
@@ -27,7 +31,7 @@ const ReactionsAndCommentsDisplay = ({ post }) => {
   };
 
   const sumAllReactions = (reactions) => {
-    console.log("NEW rec", reactions);
+    // console.log("NEW rec", reactions);
     if (reactions?.length) {
       const result = reactions
         .map((item) => item.value)
@@ -39,8 +43,14 @@ const ReactionsAndCommentsDisplay = ({ post }) => {
     }
   };
 
+  const openReactionsComponent = () => {
+    dispatch(updatePostItem(post));
+    dispatch(toggleReactionsModal(!reactionsModalIsOpen));
+  };
+
   useEffect(() => {
-    setPostReactions(Utils.formattedReactions(post?.reactions));
+    //get post reaction from post schema
+    setReactions(Utils.formattedReactions(post?.reactions));
   }, [post]);
   return (
     <>
@@ -48,8 +58,9 @@ const ReactionsAndCommentsDisplay = ({ post }) => {
         <div className="reaction">
           <div className="likes-block">
             <div className="likes-block-icons reactions-icon-display">
-              {postReactions.length &&
-                postReactions.map((reaction) => (
+              {/* {console.log("postReactions", postReactions)} */}
+              {reactions.length > 0 &&
+                reactions.map((reaction) => (
                   <div
                     className="tooltip-container"
                     key={Utils.generateString(10)}
@@ -104,8 +115,9 @@ const ReactionsAndCommentsDisplay = ({ post }) => {
               data-testid="reactions-count"
               className="tooltip-container reactions-count"
               onMouseEnter={getPostReactions}
+              onClick={openReactionsComponent}
             >
-              {sumAllReactions(postReactions)}
+              {sumAllReactions(reactions)}
               <div
                 className="tooltip-container-text tooltip-container-likes-bottom"
                 data-testid="tooltip-container"

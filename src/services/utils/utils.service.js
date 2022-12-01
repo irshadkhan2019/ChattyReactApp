@@ -35,16 +35,11 @@ export class Utils {
 
     return canvas.toDataURL("image/png");
   }
+
   //result is the data we get from api after user logs in
   //pagereload session fn is used to make user stay a same page after reload instead
   //of going to login page
   static dispatchUser(result, pageReload, dispatch, setUser) {
-    console.log(
-      "Dispatching user with data",
-      result.data.token,
-      result.data.user,
-      addUser
-    );
     pageReload(true);
     dispatch(addUser({ token: result.data.token, profile: result.data.user }));
     setUser(result.data.user);

@@ -20,7 +20,7 @@ import set from "date-fns/esm/set";
 
 const PostForm = () => {
   const { profile } = useSelector((state) => state.user);
-  const { type, isOpen, openFileDiaog, gifModalIsOpen, feelingsIsOpen } =
+  const { type, isOpen, openFileDialog, gifModalIsOpen, feelingsIsOpen } =
     useSelector((state) => state.modal);
   const [selectedPostImage, setSelectedPostImage] = useState();
   const fileInputRef = useRef();
@@ -34,7 +34,7 @@ const PostForm = () => {
   const openImageModal = () => {
     fileInputRef.current.click();
     dispatch(openModal({ type: "add" }));
-    dispatch(toggleImageModal(!openFileDiaog));
+    dispatch(toggleImageModal(!openFileDialog));
   };
 
   const openGifModal = () => {
@@ -49,6 +49,7 @@ const PostForm = () => {
   const handleFileChange = (event) => {
     ImageUtils.addFileToRedux(event, "", setSelectedPostImage, dispatch);
   };
+
   return (
     <>
       <div className="post-form" data-testid="post-form">
@@ -76,6 +77,7 @@ const PostForm = () => {
             </div>
             <hr />
             <ul className="post-form-list" data-testid="list-item">
+              {/* photo */}
               <li
                 className="post-form-list-item image-select"
                 onClick={() => openImageModal()}
@@ -110,6 +112,7 @@ const PostForm = () => {
           </div>
         </div>
       </div>
+
       {/* DISPLAY ADD POST MODAL */}
       {isOpen && type === "add" && (
         <AddPost selectedImage={selectedPostImage} />

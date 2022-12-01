@@ -24,6 +24,6 @@ export default useDebounce;
 // const search = " "; //changes every keypress
 // const debounce = useDebounce(search, 5000);
 
-//evry time search changes ,value changes in useEffect if b4 5 sec a new value
-// comes then prev timeer is cleared and it will again wait for 5 sec b4
+//every time search changes ,value changes in useEffect if b4 5 sec a new value
+// comes then prev timer is cleared and it will again wait for 5 sec b4
 // maing api call :)

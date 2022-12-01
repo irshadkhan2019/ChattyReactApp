@@ -44,11 +44,11 @@ const Streams = () => {
   const getAllPosts = async (pageNum) => {
     try {
       const response = await postService.getAllPosts(pageNum);
-      console.log("NEW REQ WAS MADE:", currentPage, pageNum, response);
+      // console.log("NEW REQ WAS MADE:", currentPage, pageNum, response);
       if (response?.data?.posts.length > 0) {
         appPosts = [...posts, ...response.data.posts];
         const newPosts = uniqBy(appPosts, "_id"); //remove duplicate posts
-        console.log(newPosts);
+        // console.log(newPosts);
         setPosts(newPosts);
       }
       setLoading(false);
@@ -92,9 +92,10 @@ const Streams = () => {
   useEffect(() => {
     PostUtils.socketIOPost(posts, setPosts);
   }, [posts]);
+
   return (
     <div className="streams" data-testid="streams">
-      {console.log("Posts till now!", posts)}
+      {/* {console.log("Posts till now!", posts)} */}
       <div className="streams-content">
         <div
           className="streams-post"

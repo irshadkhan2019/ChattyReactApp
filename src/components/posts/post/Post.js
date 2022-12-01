@@ -1,13 +1,17 @@
 import { find } from "lodash";
 import PropTypes from "prop-types";
 import { FaPencilAlt, FaRegTrashAlt } from "react-icons/fa";
+import { useSelector } from "react-redux";
 import { feelingsList, privacyList } from "../../../services/utils/static.data";
 import Avatar from "../../avatar/Avatar";
 import PostCommentSection from "../post-comment-section/PostCommentSection";
+import ReactionsModal from "../reactions/reaction-modal/ReactionsModal";
 import { timeAgo } from "./../../../services/utils/timeago.utils";
 import "./Post.scss";
 
 const Post = ({ post, showIcons }) => {
+  const { reactionsModalIsOpen } = useSelector((state) => state.modal);
+
   const getFeeling = (name) => {
     const feeling = find(feelingsList, (data) => data.name === name);
     return feeling?.image;
@@ -25,6 +29,7 @@ const Post = ({ post, showIcons }) => {
 
   return (
     <>
+      {reactionsModalIsOpen && <ReactionsModal />}
       <div className="post-body" data-testid="post">
         <div className="user-post-data">
           <div className="user-post-data-wrap">
@@ -49,13 +54,14 @@ const Post = ({ post, showIcons }) => {
                       is feeling{" "}
                       <img
                         className="feeling-icon"
-                        src={`${getFeeling(post?.feeling)}`}
+                        src={`${getFeeling(post?.feelings)}`}
                         alt=""
                       />{" "}
                       <div>{post?.feelings}</div>
                     </div>
                   )}
                 </h5>
+                {/* for user who owns a post */}
                 {showIcons && (
                   <div className="post-icons" data-testid="post-icons">
                     <FaPencilAlt className="pencil" />
@@ -66,7 +72,7 @@ const Post = ({ post, showIcons }) => {
 
               {post?.createdAt && (
                 <p className="time-text-display" data-testid="time-display">
-                  {timeAgo.transform(post?.createdAt)} &middot;{" "}
+                  {timeAgo.transform(post?.createdAt)} &middot;
                   {getPrivacy(post?.privacy)}
                 </p>
               )}
