@@ -1,12 +1,15 @@
 import { cloneDeep } from "lodash";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { postService } from "../../../../services/api/post/post.service";
 import { socketService } from "../../../../services/sockets/socket.service";
 import { Utils } from "../../../../services/utils/utils.service";
 import Input from "./../../../inputs/Input";
+import PropTypes from "prop-types";
+import "./CommentInputBox.scss";
 
 const CommentInputBox = ({ post }) => {
+  console.log("render comment for post", post);
   const { profile } = useSelector((state) => state.user);
   const [comment, setComment] = useState("");
   const commentInputRef = useRef(null);

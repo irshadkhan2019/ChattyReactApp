@@ -11,11 +11,18 @@ import { useDispatch, useSelector } from "react-redux";
 import { postService } from "../../../services/api/post/post.service";
 import { addReactions } from "../../../redux-toolkit/reducers/post/user-post-reaction.reducer";
 import { socketService } from "./../../../services/sockets/socket.service";
+import useLocalStorage from "./../../../hooks/useLocalStorage";
+import {
+  clearPost,
+  updatePostItem,
+} from "../../../redux-toolkit/reducers/post/post.reducer";
 
 const CommentArea = ({ post }) => {
   const { profile } = useSelector((state) => state.user);
   let { reactions } = useSelector((state) => state.userPostReactions);
   const [userSelectedReaction, setUserSelectedReaction] = useState("");
+  const selectedPostId = useLocalStorage("selectedpostId", "get");
+  const [setSelectedPostId] = useLocalStorage("selectedpostId", "set");
   const dispatch = useDispatch();
 
   // const reactions = [];
@@ -33,6 +40,27 @@ const CommentArea = ({ post }) => {
     },
     [post]
   );
+
+  const toggleCommentInput = () => {
+    if (!selectedPostId) {
+      console.log("Setting comment input for post", selectedPostId);
+      setSelectedPostId(post?._id);
+      dispatch(updatePostItem(post));
+    } else {
+      console.log("remove comment input for post", selectedPostId);
+      removeSelectedPostId();
+    }
+  };
+
+  const removeSelectedPostId = () => {
+    if (selectedPostId === post?._id) {
+      setSelectedPostId("");
+      dispatch(clearPost());
+    } else {
+      setSelectedPostId(post?._id);
+      dispatch(updatePostItem(post));
+    }
+  };
 
   const addReactionPost = async (reaction) => {
     console.log("reaction", reaction, "is clicked");
@@ -207,7 +235,7 @@ const CommentArea = ({ post }) => {
             <Reactions handleClick={addReactionPost} />
           </div>
         </div>
-        <div className="comment-block">
+        <div className="comment-block" onClick={toggleCommentInput}>
           <span className="comments-text">
             <FaRegCommentAlt className="comment-alt" /> <span>Comments</span>
           </span>

@@ -8,9 +8,12 @@ import PostCommentSection from "../post-comment-section/PostCommentSection";
 import ReactionsModal from "../reactions/reaction-modal/ReactionsModal";
 import { timeAgo } from "./../../../services/utils/timeago.utils";
 import "./Post.scss";
+import useLocalStorage from "./../../../hooks/useLocalStorage";
+import CommentInputBox from "../comments/comment-input/CommentInputBox";
 
 const Post = ({ post, showIcons }) => {
   const { reactionsModalIsOpen } = useSelector((state) => state.modal);
+  const selectedPostId = useLocalStorage("selectedpostId", "get");
 
   const getFeeling = (name) => {
     const feeling = find(feelingsList, (data) => data.name === name);
@@ -118,6 +121,8 @@ const Post = ({ post, showIcons }) => {
               <PostCommentSection post={post} />
             </div>
           </div>
+          {/* {console.log(selectedPostId)} */}
+          {selectedPostId === post?._id && <CommentInputBox post={post} />}
         </div>
       </div>
     </>
