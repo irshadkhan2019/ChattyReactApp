@@ -10,9 +10,12 @@ import { timeAgo } from "./../../../services/utils/timeago.utils";
 import "./Post.scss";
 import useLocalStorage from "./../../../hooks/useLocalStorage";
 import CommentInputBox from "../comments/comment-input/CommentInputBox";
+import CommentsModal from "../comments/comments-modal/CommentsModal";
 
 const Post = ({ post, showIcons }) => {
-  const { reactionsModalIsOpen } = useSelector((state) => state.modal);
+  const { reactionsModalIsOpen, commentsModalIsOpen } = useSelector(
+    (state) => state.modal
+  );
   const selectedPostId = useLocalStorage("selectedpostId", "get");
 
   const getFeeling = (name) => {
@@ -33,6 +36,7 @@ const Post = ({ post, showIcons }) => {
   return (
     <>
       {reactionsModalIsOpen && <ReactionsModal />}
+      {commentsModalIsOpen && <CommentsModal />}
       <div className="post-body" data-testid="post">
         <div className="user-post-data">
           <div className="user-post-data-wrap">

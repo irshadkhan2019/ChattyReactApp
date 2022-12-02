@@ -2,7 +2,10 @@ import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import { FaSpinner } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
-import { toggleReactionsModal } from "../../../../redux-toolkit/reducers/modal/modal.reducer";
+import {
+  toggleCommentsModal,
+  toggleReactionsModal,
+} from "../../../../redux-toolkit/reducers/modal/modal.reducer";
 import { updatePostItem } from "../../../../redux-toolkit/reducers/post/post.reducer";
 import { postService } from "../../../../services/api/post/post.service";
 import { reactionsMap } from "../../../../services/utils/static.data";
@@ -11,7 +14,9 @@ import like from "./../../../../assets/reactions/love.png";
 import "./ReactionsAndCommentsDisplay.scss";
 
 const ReactionsAndCommentsDisplay = ({ post }) => {
-  const { reactionsModalIsOpen } = useSelector((state) => state.modal);
+  const { reactionsModalIsOpen, commentsModalIsOpen } = useSelector(
+    (state) => state.modal
+  );
   const [postReactions, setPostReactions] = useState([]);
   const [reactions, setReactions] = useState([]);
   const [postCommentNames, setPostCommentNames] = useState([]);
@@ -61,6 +66,12 @@ const ReactionsAndCommentsDisplay = ({ post }) => {
   const openReactionsComponent = () => {
     dispatch(updatePostItem(post));
     dispatch(toggleReactionsModal(!reactionsModalIsOpen));
+  };
+
+  const openCommentsComponent = () => {
+    console.log("openng comments component");
+    dispatch(updatePostItem(post));
+    dispatch(toggleCommentsModal(!commentsModalIsOpen));
   };
 
   useEffect(() => {
@@ -161,6 +172,7 @@ const ReactionsAndCommentsDisplay = ({ post }) => {
         <div
           className="comment tooltip-container"
           data-testid="comment-container"
+          onClick={() => openCommentsComponent()}
         >
           {post?.commentsCount > 0 && (
             <span
