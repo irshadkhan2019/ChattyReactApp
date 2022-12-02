@@ -26,6 +26,7 @@ const Streams = () => {
   const bottomLineRef = useRef();
   const dispatch = useDispatch();
   const storedUsername = useLocalStorage("username", "get");
+  const [deleteSelectedPostId] = useLocalStorage("selectedpostId", "delete");
   let appPosts = useRef([]);
   const PAGE_SIZE = 5;
   useInfiniteScroll(bodyRef, bottomLineRef, fetchPostData);
@@ -76,6 +77,7 @@ const Streams = () => {
 
   useEffectOnce(() => {
     getReactionsByUsername();
+    deleteSelectedPostId();
   });
 
   useEffect(() => {
