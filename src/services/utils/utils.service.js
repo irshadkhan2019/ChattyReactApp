@@ -140,4 +140,12 @@ export class Utils {
       return millify(data);
     }
   }
+
+  static getPostImage = (imgId, imgVersion) => {
+    let imageUrl = "";
+    if (imgId && imgVersion) {
+      imageUrl = `https://res.cloudinary.com/dnslnpn4l/image/upload/v${imgVersion}/${imgId}.jpg`;
+    }
+    return imageUrl;
+  };
 } //eoc
