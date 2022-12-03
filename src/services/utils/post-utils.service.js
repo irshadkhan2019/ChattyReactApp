@@ -81,7 +81,6 @@ export class PostUtils {
     type,
     setApiResponse,
     setLoading,
-
     dispatch
   ) {
     setApiResponse(type);
@@ -96,7 +95,6 @@ export class PostUtils {
     imageInputRef,
     setApiResponse,
     setLoading,
-    setDisable,
     dispatch
   ) {
     try {
@@ -118,7 +116,6 @@ export class PostUtils {
         "error",
         setApiResponse,
         setLoading,
-        setDisable,
         dispatch
       );
     }
@@ -130,7 +127,6 @@ export class PostUtils {
     postData,
     setApiResponse,
     setLoading,
-    setDisable,
     dispatch
   ) {
     try {
@@ -145,13 +141,13 @@ export class PostUtils {
           "success",
           setApiResponse,
           setLoading,
-          setDisable,
           dispatch
         );
         setTimeout(() => {
           setApiResponse("success");
           setLoading(false);
         }, 3000);
+        PostUtils.closePostModal(dispatch);
       }
       return response;
     } catch (error) {
@@ -160,7 +156,6 @@ export class PostUtils {
         "error",
         setApiResponse,
         setLoading,
-        setDisable,
         dispatch
       );
     }
@@ -171,7 +166,6 @@ export class PostUtils {
     postData,
     setApiResponse,
     setLoading,
-    setDisable,
     dispatch
   ) {
     const response = await postService.updatePost(postId, postData);
@@ -182,13 +176,13 @@ export class PostUtils {
         "success",
         setApiResponse,
         setLoading,
-        setDisable,
         dispatch
       );
       setTimeout(() => {
         setApiResponse("success");
         setLoading(false);
       }, 3000);
+      PostUtils.closePostModal(dispatch);
     }
     return response;
   }
@@ -223,6 +217,7 @@ export class PostUtils {
     });
 
     socketService?.socket?.on("update post", (updatedPost) => {
+      console.log("UPDATE POST EVENT", updatedPost);
       PostUtils.updateSinglePost(posts, updatedPost, setPosts);
     });
 
@@ -256,8 +251,9 @@ export class PostUtils {
 
   static updateSinglePost(posts, updatedPost, setPosts) {
     posts = cloneDeep(posts);
-    // const index = findIndex(posts, (data) => data._id === post._id); OR
-    const index = findIndex(posts, ["_id", updatedPost?._id]);
+    const index = findIndex(posts, (data) => data._id === updatedPost._id);
+    console.log("updateSinglePost", updatedPost, index);
+    // const index = findIndex(posts, ["_id", updatedPost?._id]);
     if (index > -1) {
       //update posts arr with 1 new post at index =index
       posts.splice(index, 1, updatedPost);

@@ -122,7 +122,6 @@ const AddPost = ({ selectedImage }) => {
           imageInputRef,
           setApiResponse,
           setLoading,
-          setDisable,
           dispatch
         );
         if (response && response.data.message) {
@@ -155,7 +154,6 @@ const AddPost = ({ selectedImage }) => {
         "error",
         setApiResponse,
         setLoading,
-        setDisable,
         dispatch
       );
     }

@@ -171,7 +171,6 @@ const EditPost = () => {
         "error",
         setApiResponse,
         setLoading,
-        setDisable,
         dispatch
       );
     }
@@ -183,12 +182,8 @@ const EditPost = () => {
       postData,
       setApiResponse,
       setLoading,
-      setDisable,
       dispatch
     );
-    if (response && response?.data?.message) {
-      PostUtils.closePostModal(dispatch);
-    }
   };
 
   const updatePostWithImage = async (image) => {
@@ -199,12 +194,8 @@ const EditPost = () => {
       postData,
       setApiResponse,
       setLoading,
-      setDisable,
       dispatch
     );
-    if (response && response?.data?.message) {
-      PostUtils.closePostModal(dispatch);
-    }
   };
 
   useEffect(() => {
