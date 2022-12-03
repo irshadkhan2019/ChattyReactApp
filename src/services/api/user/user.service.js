@@ -7,13 +7,17 @@ class UserService {
     return response;
   }
   async logoutUser() {
-    console.log("user logged out");
+    // console.log("user logged out");
     const response = await axios.get("/signout");
     console.log(response);
     return response;
   }
   async checkCurrentUser() {
     const response = await axios.get("/currentuser");
+    return response;
+  }
+  async getAllUsers(page) {
+    const response = await axios.get(`/user/all/${page}`);
     return response;
   }
 }

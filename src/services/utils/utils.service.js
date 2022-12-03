@@ -114,6 +114,10 @@ export class Utils {
     );
   }
 
+  static checkIfUserIsOnline(username, onlineUsers) {
+    return some(onlineUsers, (user) => user === username?.toLowercase());
+  }
+
   static firstLetterUpperCase(word) {
     if (!word) return "";
     return `${word.charAt(0).toUpperCase()}${word.slice(1)}`;
