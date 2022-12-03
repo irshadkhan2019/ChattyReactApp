@@ -26,6 +26,11 @@ class PostService {
     return response;
   }
 
+  async deletePost(postId) {
+    const response = await axios.delete(`/post/${postId}`);
+    return response;
+  }
+
   async getReactionsByUsername(username) {
     const response = await axios.get(`/post/reactions/username/${username}`);
     return response;

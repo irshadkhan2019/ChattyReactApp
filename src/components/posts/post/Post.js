@@ -18,9 +18,15 @@ import {
   openModal,
   toggleDeleteDialog,
 } from "../../../redux-toolkit/reducers/modal/modal.reducer";
-import { updatePostItem } from "../../../redux-toolkit/reducers/post/post.reducer";
+import {
+  clearPost,
+  updatePostItem,
+} from "../../../redux-toolkit/reducers/post/post.reducer";
+import Dialog from "../../dialog/Dialog";
+import { postService } from "../../../services/api/post/post.service";
 
 const Post = ({ post, showIcons }) => {
+  const { _id } = useSelector((state) => state.post);
   const { reactionsModalIsOpen, commentsModalIsOpen, deleteDialogIsOpen } =
     useSelector((state) => state.modal);
   const [showImageModal, setShowImageModal] = useState(false);
@@ -36,6 +42,23 @@ const Post = ({ post, showIcons }) => {
   const getPrivacy = (type) => {
     const privacy = find(privacyList, (data) => data.topText === type);
     return privacy?.icon;
+  };
+
+  const deletePost = async () => {
+    try {
+      const response = await postService.deletePost(_id);
+      if (response) {
+        Utils.dispatchNotification(response.data.message, "success", dispatch);
+        dispatch(toggleDeleteDialog({ toggle: !deleteDialogIsOpen }));
+        dispatch(clearPost());
+      }
+    } catch (error) {
+      Utils.dispatchNotification(
+        error.response.data.message,
+        "error",
+        dispatch
+      );
+    }
   };
 
   const openPostModal = () => {
@@ -57,6 +80,20 @@ const Post = ({ post, showIcons }) => {
           image={`${imageUrl}`}
           onCancel={() => setShowImageModal(!showImageModal)}
           showArrow={false}
+        />
+      )}
+      {deleteDialogIsOpen && (
+        <Dialog
+          title={`Are you sure you want to delete this post`}
+          firstButtonText="Delete"
+          secondButtonText="Cancel"
+          firstBtnHandler={() => {
+            deletePost();
+          }}
+          secondBtnHandler={() => {
+            dispatch(toggleDeleteDialog({ toggle: !deleteDialogIsOpen }));
+            dispatch(clearPost());
+          }}
         />
       )}
       <div className="post-body" data-testid="post">

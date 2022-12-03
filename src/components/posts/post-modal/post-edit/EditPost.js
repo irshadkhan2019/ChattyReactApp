@@ -115,8 +115,8 @@ const EditPost = () => {
   }, [post, postData]);
 
   const editableFields = useCallback(() => {
-    if (post?.post.feelings) {
-      getFeeling(post?.post.feelings);
+    if (post?.feelings) {
+      getFeeling(post?.feelings);
     }
     if (post?.bgColor) {
       postData.bgColor = post?.bgColor;
