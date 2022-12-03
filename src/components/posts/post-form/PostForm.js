@@ -17,6 +17,7 @@ import { useRef, useState } from "react";
 import { current } from "@reduxjs/toolkit";
 import { ImageUtils } from "../../../services/utils/image-utils.service";
 import set from "date-fns/esm/set";
+import EditPost from "../post-modal/post-edit/EditPost";
 
 const PostForm = () => {
   const { profile } = useSelector((state) => state.user);
@@ -117,6 +118,7 @@ const PostForm = () => {
       {isOpen && type === "add" && (
         <AddPost selectedImage={selectedPostImage} />
       )}
+      {isOpen && type === "edit" && <EditPost />}
     </>
   );
 };

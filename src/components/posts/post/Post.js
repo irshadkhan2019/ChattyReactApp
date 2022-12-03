@@ -1,7 +1,7 @@
 import { find } from "lodash";
 import PropTypes from "prop-types";
 import { FaPencilAlt, FaRegTrashAlt } from "react-icons/fa";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { feelingsList, privacyList } from "../../../services/utils/static.data";
 import Avatar from "../../avatar/Avatar";
 import PostCommentSection from "../post-comment-section/PostCommentSection";
@@ -14,14 +14,19 @@ import CommentsModal from "../comments/comments-modal/CommentsModal";
 import { useState } from "react";
 import { Utils } from "../../../services/utils/utils.service";
 import ImageModal from "../../image-modal/ImageModal";
+import {
+  openModal,
+  toggleDeleteDialog,
+} from "../../../redux-toolkit/reducers/modal/modal.reducer";
+import { updatePostItem } from "../../../redux-toolkit/reducers/post/post.reducer";
 
 const Post = ({ post, showIcons }) => {
-  const { reactionsModalIsOpen, commentsModalIsOpen } = useSelector(
-    (state) => state.modal
-  );
+  const { reactionsModalIsOpen, commentsModalIsOpen, deleteDialogIsOpen } =
+    useSelector((state) => state.modal);
   const [showImageModal, setShowImageModal] = useState(false);
   const [imageUrl, setImageUrl] = useState("");
   const selectedPostId = useLocalStorage("selectedpostId", "get");
+  const dispatch = useDispatch();
 
   const getFeeling = (name) => {
     const feeling = find(feelingsList, (data) => data.name === name);
@@ -31,6 +36,16 @@ const Post = ({ post, showIcons }) => {
   const getPrivacy = (type) => {
     const privacy = find(privacyList, (data) => data.topText === type);
     return privacy?.icon;
+  };
+
+  const openPostModal = () => {
+    dispatch(openModal({ type: "edit" }));
+    dispatch(updatePostItem(post));
+  };
+
+  const openDeleteDialog = () => {
+    dispatch(toggleDeleteDialog({ toggle: !deleteDialogIsOpen }));
+    dispatch(updatePostItem(post));
   };
 
   return (
@@ -78,8 +93,11 @@ const Post = ({ post, showIcons }) => {
                 {/* for user who owns a post */}
                 {showIcons && (
                   <div className="post-icons" data-testid="post-icons">
-                    <FaPencilAlt className="pencil" />
-                    <FaRegTrashAlt className="trash" />
+                    <FaPencilAlt className="pencil" onClick={openPostModal} />
+                    <FaRegTrashAlt
+                      className="trash"
+                      onClick={openDeleteDialog}
+                    />
                   </div>
                 )}
               </div>
