@@ -1,4 +1,4 @@
-import { floor, random, some } from "lodash";
+import { findIndex, floor, random, some } from "lodash";
 import millify from "millify";
 import {
   addNotification,
@@ -152,4 +152,10 @@ export class Utils {
     }
     return imageUrl;
   };
+
+  static removeUserFromList(list, userId) {
+    const index = findIndex(list, (id) => id === userId);
+    list.splice(index, 1);
+    return list;
+  }
 } //eoc
