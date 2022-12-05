@@ -12,10 +12,12 @@ class UserService {
     console.log(response);
     return response;
   }
+
   async checkCurrentUser() {
     const response = await axios.get("/currentuser");
     return response;
   }
+
   async getAllUsers(page) {
     const response = await axios.get(`/user/all/${page}`);
     return response;
