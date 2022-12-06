@@ -2,26 +2,27 @@ import { followerService } from "../api/followers/follower.service";
 import { Utils } from "./utils.service";
 import { socketService } from "./../sockets/socket.service";
 import { cloneDeep, filter, find, findIndex } from "lodash";
+import { addUser } from "../../redux-toolkit/reducers/user/user.reducer";
 
 export class FollowersUtils {
   static async followUser(user, dispatch) {
     const response = await followerService.followUser(user?._id);
-    Utils.dispatchNotification(response.data.message, "success", "dispatch");
+    Utils.dispatchNotification(response.data.message, "success", dispatch);
   }
 
   static async unfollowUser(user, profile, dispatch) {
     const response = await followerService.unfollowUser(user?._id, profile._id);
-    Utils.dispatchNotification(response.data.message, "success", "dispatch");
+    Utils.dispatchNotification(response.data.message, "success", dispatch);
   }
 
   static async blockUser(user, dispatch) {
     const response = await followerService.blockUser(user?._id);
-    Utils.dispatchNotification(response.data.message, "success", "dispatch");
+    Utils.dispatchNotification(response.data.message, "success", dispatch);
   }
 
   static async unblockUser(user, dispatch) {
     const response = await followerService.unblockUser(user?._id);
-    Utils.dispatchNotification(response.data.message, "success", "dispatch");
+    Utils.dispatchNotification(response.data.message, "success", dispatch);
   }
 
   static socketIOFollowAndUnfollow(users, followers, setFollowers, setUsers) {
