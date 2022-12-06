@@ -12,8 +12,12 @@ import Avatar from "./../../../components/avatar/Avatar";
 import CardElementStats from "../../../components/card-element/CardElementStats";
 import CardElementButtons from "../../../components/card-element/CardElementButton";
 import { ProfileUtils } from "./../../../services/utils/profile-utils.service";
+import { followerService } from "../../../services/api/followers/follower.service";
+import { FollowersUtils } from "../../../services/utils/followers-utils.service";
+import { socketService } from "../../../services/sockets/socket.service";
 
 const People = () => {
+  const { profile } = useSelector((state) => state.user);
   const [users, setUsers] = useState([]);
   const [following, setFollowing] = useState([]);
   const [onlineUsers, setOnlineUsers] = useState([]);
@@ -59,8 +63,62 @@ const People = () => {
     }
   }, [currentPage, dispatch]);
 
+  const getUserFollowing = async () => {
+    try {
+      const response = await followerService.getUserFollowing();
+      setFollowing(response.data.following);
+      setLoading(false);
+    } catch (error) {
+      setLoading(false);
+      Utils.dispatchNotification(
+        error.response.data.message,
+        "error",
+        dispatch
+      );
+    }
+  };
+
+  const followUser = async (user) => {
+    try {
+      FollowersUtils.followUser(user, dispatch);
+    } catch (error) {
+      Utils.dispatchNotification(
+        error?.response?.data.message,
+        "error",
+        dispatch
+      );
+    }
+  };
+
+  const unFollowUser = async (user) => {
+    try {
+      console.log("unFollowUser", user);
+      const userData = user;
+      userData.followersCount -= 1;
+      socketService?.socket?.emit("unfollow user", userData);
+      FollowersUtils.unfollowUser(user, profile, dispatch);
+    } catch (error) {
+      Utils.dispatchNotification(
+        error?.response?.data.message,
+        "error",
+        dispatch
+      );
+    }
+  };
+
+  useEffect(() => {
+    FollowersUtils.socketIOFollowAndUnfollow(
+      users,
+      following,
+      setFollowing,
+      setUsers
+    );
+    console.log("NEW FOLLOWING LIST", following);
+  }, [following, users]);
+
   useEffectOnce(() => {
     getAllUsers();
+    getUserFollowing();
   });
 
   return (
@@ -103,8 +161,8 @@ const People = () => {
                 isChecked={Utils.checkIfUserIsFollowed(following, data?._id)}
                 btnTextOne="Follow"
                 btnTextTwo="Unfollow"
-                onClickBtnOne={() => {}}
-                onClickBtnTwo={() => {}}
+                onClickBtnOne={() => followUser(data)}
+                onClickBtnTwo={() => unFollowUser(data)}
                 onNavigateToProfile={() =>
                   ProfileUtils.navigateToProfile(data, navigate)
                 }

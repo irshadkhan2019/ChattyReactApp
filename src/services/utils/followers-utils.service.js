@@ -11,6 +11,7 @@ export class FollowersUtils {
   }
 
   static async unfollowUser(user, profile, dispatch) {
+    console.log("unfollow user", user, "profile", profile);
     const response = await followerService.unfollowUser(user?._id, profile._id);
     Utils.dispatchNotification(response.data.message, "success", dispatch);
   }
@@ -28,6 +29,7 @@ export class FollowersUtils {
   static socketIOFollowAndUnfollow(users, followers, setFollowers, setUsers) {
     //
     socketService.socket.on("add follower", (data) => {
+      console.log("adding follower", data);
       const userData = find(users, (user) => user._id === data?._id);
       if (userData) {
         const updatedFollowers = [...followers, data];
@@ -37,6 +39,7 @@ export class FollowersUtils {
     });
 
     socketService.socket.on("remove follower", (data) => {
+      console.log("removing follower", data);
       const userData = find(users, (user) => user._id === data?._id);
       if (userData) {
         const updatedFollowers = filter(
@@ -114,6 +117,7 @@ export class FollowersUtils {
   }
 
   static updateSingleUser(users, userData, followerData, setUsers) {
+    console.log("UPDATE SINGLE USER", userData, followerData);
     users = cloneDeep(users);
     userData.followersCount = followerData.followersCount;
     userData.followingCount = followerData.followingCount;
