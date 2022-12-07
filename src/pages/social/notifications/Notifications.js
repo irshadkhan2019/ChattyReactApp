@@ -114,11 +114,11 @@ const Notifications = () => {
         {/* display all notifi if len >0 */}
         {notifications.length > 0 && (
           <div className="notifications-box">
-            {notifications.map((notification, index) => (
+            {notifications.map((notification) => (
               <div
                 className="notification-box"
                 data-testid="notification-box"
-                key={index}
+                key={notification?._id}
                 onClick={() => markAsRead(notification)}
               >
                 <div className="notification-box-sub-card">

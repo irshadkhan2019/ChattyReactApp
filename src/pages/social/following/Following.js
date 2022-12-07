@@ -76,7 +76,7 @@ const Following = () => {
           {following.map((data) => (
             <div
               className="card-element-item"
-              key={Utils.generateString(10)}
+              key={data?._id}
               data-testid="card-element-item"
             >
               <div className="card-element-header">

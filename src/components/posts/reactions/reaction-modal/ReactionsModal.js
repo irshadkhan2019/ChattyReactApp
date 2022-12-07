@@ -88,7 +88,7 @@ const ReactionsModal = () => {
             </li>
             {formattedReactions.map((reaction, index) => (
               <li
-                key={index}
+                key={Utils.generateString(10)}
                 className={`${
                   reaction.type === reactionType ? "activeTab" : ""
                 }`}
