@@ -63,11 +63,23 @@ const PostForm = () => {
   };
 
   const handleFileChange = (event) => {
-    ImageUtils.addFileToRedux(event, "", setSelectedPostImage, dispatch);
+    ImageUtils.addFileToRedux(
+      event,
+      "",
+      setSelectedPostImage,
+      dispatch,
+      "image"
+    );
   };
 
   const handleVideoFileChange = (event) => {
-    console.log(event);
+    ImageUtils.addFileToRedux(
+      event,
+      "",
+      setSelectedPostVideo,
+      dispatch,
+      "video"
+    );
   };
 
   return (
@@ -154,7 +166,10 @@ const PostForm = () => {
 
       {/* DISPLAY ADD POST MODAL */}
       {isOpen && type === "add" && (
-        <AddPost selectedImage={selectedPostImage} />
+        <AddPost
+          selectedImage={selectedPostImage}
+          selectedPostVideo={selectedPostVideo}
+        />
       )}
       {isOpen && type === "edit" && <EditPost />}
     </>

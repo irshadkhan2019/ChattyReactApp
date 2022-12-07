@@ -1,43 +1,64 @@
 import { updatePostItem } from "../../redux-toolkit/reducers/post/post.reducer";
 
 export class ImageUtils {
-  static validateFile(file) {
+  static validateFile(file, type) {
     //pdf zip file and other not allowed
-    const validTypes = ["image/jpeg", "image/jpg", "image/png", "image/gif"];
-    return file && validTypes.indexOf(file.type) > -1;
+    if (type == "image") {
+      const validImageTypes = [
+        "image/jpeg",
+        "image/jpg",
+        "image/png",
+        "image/gif",
+      ];
+      return file && validImageTypes.indexOf(file.type) > -1;
+    } else {
+      const validVideoTypes = [
+        "video/m4v",
+        "video/mp4",
+        "video/mkv",
+        "video/avi",
+        "video/mpg",
+        "video/webm",
+      ];
+      return file && validVideoTypes.indexOf(file.type) > -1;
+    }
   }
 
-  static checkFileSize(file) {
+  static checkFileSize(file, type) {
     let fileError = "";
-    const isValid = ImageUtils.validateFile(file);
+    const isValid = ImageUtils.validateFile(file, type);
     if (!isValid) {
       fileError = `File ${file.name} not accepted `;
     }
 
-    if (file.size > 50000000) {
-      //50MB
+    if (file.size > 100000000) {
+      //100MB
       fileError = `File is too large`;
     }
     return fileError;
   }
 
-  static checkFile(file) {
-    const error = ImageUtils.checkFileSize(file);
+  static checkFile(file, type) {
+    const error = ImageUtils.checkFileSize(file, type);
     if (error) {
       return window.alert(error);
     }
   }
 
-  static addFileToRedux(event, post, setSelectedPostImage, dispatch) {
+  static addFileToRedux(event, post, setSelectedFile, dispatch, type) {
     const file = event.target.files[0];
-    ImageUtils.checkFile(file);
-    setSelectedPostImage(file);
+    console.log("type", type, file);
+    ImageUtils.checkFile(file, type);
+    setSelectedFile(file);
     dispatch(
       updatePostItem({
-        image: URL.createObjectURL(file),
+        image: type === "image" ? URL.createObjectURL(file) : "",
+        video: type === "video" ? URL.createObjectURL(file) : "",
         gifUrl: "",
         imgId: "",
         imgVersion: "",
+        videoId: "",
+        videoVersion: "",
         post,
       })
     );
