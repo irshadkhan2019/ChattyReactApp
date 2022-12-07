@@ -76,14 +76,11 @@ const Streams = () => {
   };
 
   useEffectOnce(() => {
+    dispatch(getPosts());
+    dispatch(getUserSuggestions());
     getReactionsByUsername();
     deleteSelectedPostId();
   });
-
-  useEffect(() => {
-    dispatch(getPosts());
-    dispatch(getUserSuggestions());
-  }, [dispatch]);
 
   useEffect(() => {
     setLoading(allPosts?.isLoading);

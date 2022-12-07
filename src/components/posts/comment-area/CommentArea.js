@@ -20,7 +20,7 @@ import {
 const CommentArea = ({ post }) => {
   const { profile } = useSelector((state) => state.user);
   let { reactions } = useSelector((state) => state.userPostReactions);
-  const [userSelectedReaction, setUserSelectedReaction] = useState("");
+  const [userSelectedReaction, setUserSelectedReaction] = useState("like");
   const selectedPostId = useLocalStorage("selectedpostId", "get");
   const [setSelectedPostId] = useLocalStorage("selectedpostId", "set");
   const dispatch = useDispatch();
@@ -35,7 +35,7 @@ const CommentArea = ({ post }) => {
       );
       const result = userReaction
         ? Utils.firstLetterUpperCase(userReaction.type)
-        : "";
+        : "Like";
       setUserSelectedReaction(result);
     },
     [post]

@@ -2,6 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 import Avatar from "./../../avatar/Avatar";
 import Input from "./../../inputs/Input";
 import photo from "./../../../assets/images/photo.png";
+import video from "./../../../assets/images/video.png";
 import gif from "./../../../assets/images/gif.png";
 import feeling from "./../../../assets/images/feeling.png";
 
@@ -11,6 +12,7 @@ import {
   toggleFeelingModal,
   toggleGifModal,
   toggleImageModal,
+  toggleVideoModal,
 } from "../../../redux-toolkit/reducers/modal/modal.reducer";
 import AddPost from "../post-modal/post-add/AddPost";
 import { useRef, useState } from "react";
@@ -21,11 +23,18 @@ import EditPost from "../post-modal/post-edit/EditPost";
 
 const PostForm = () => {
   const { profile } = useSelector((state) => state.user);
-  const { type, isOpen, openFileDialog, gifModalIsOpen, feelingsIsOpen } =
-    useSelector((state) => state.modal);
+  const {
+    type,
+    isOpen,
+    openFileDialog,
+    gifModalIsOpen,
+    feelingsIsOpen,
+    openVideoDialog,
+  } = useSelector((state) => state.modal);
   const [selectedPostImage, setSelectedPostImage] = useState();
+  const [selectedPostVideo, setSelectedPostVideo] = useState();
   const fileInputRef = useRef();
-
+  const videoInputRef = useRef();
   const dispatch = useDispatch();
 
   const openPostmodal = () => {
@@ -36,6 +45,12 @@ const PostForm = () => {
     fileInputRef.current.click();
     dispatch(openModal({ type: "add" }));
     dispatch(toggleImageModal(!openFileDialog));
+  };
+
+  const openVideoModal = () => {
+    videoInputRef.current.click();
+    dispatch(openModal({ type: "add" }));
+    dispatch(toggleVideoModal(!openVideoDialog));
   };
 
   const openGifModal = () => {
@@ -49,6 +64,10 @@ const PostForm = () => {
 
   const handleFileChange = (event) => {
     ImageUtils.addFileToRedux(event, "", setSelectedPostImage, dispatch);
+  };
+
+  const handleVideoFileChange = (event) => {
+    console.log(event);
   };
 
   return (
@@ -108,6 +127,25 @@ const PostForm = () => {
                 onClick={() => openFeelingsComponent()}
               >
                 <img src={feeling} alt="" /> Feeling
+              </li>
+              {/* video section */}
+              <li
+                className="post-form-list-item image-select"
+                onClick={() => openVideoModal()}
+              >
+                <Input
+                  name="video"
+                  ref={videoInputRef}
+                  type="file"
+                  className="file-input"
+                  onClick={() => {
+                    if (videoInputRef.current) {
+                      videoInputRef.current.value = null;
+                    }
+                  }}
+                  handleChange={handleVideoFileChange}
+                />
+                <img src={video} alt="" /> Video
               </li>
             </ul>
           </div>
