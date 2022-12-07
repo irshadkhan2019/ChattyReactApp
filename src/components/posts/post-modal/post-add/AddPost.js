@@ -20,10 +20,11 @@ import { postService } from "../../../../services/api/post/post.service";
 import Spinner from "../../../spinner/Spinner";
 import { Utils } from "../../../../services/utils/utils.service";
 
-const AddPost = ({ selectedImage }) => {
+const AddPost = ({ selectedImage, selectedPostVideo }) => {
   const { gifModalIsOpen, feeling } = useSelector((state) => state.modal);
-  const { gifUrl, image, privacy } = useSelector((state) => state.post);
+  const { gifUrl, image, privacy, video } = useSelector((state) => state.post);
   const { profile } = useSelector((state) => state.user);
+  const [hasVideo, setHasVideo] = useState(false);
   const [loading, setLoading] = useState();
   const [postImage, setPostImage] = useState("");
   const [allowedNumberOfCharacters] = useState("100/100");
@@ -36,6 +37,7 @@ const AddPost = ({ selectedImage }) => {
     gifUrl: "",
     profilePicture: "",
     image: "",
+    video: "",
   });
 
   const [disable, setDisable] = useState(true);
@@ -167,13 +169,19 @@ const AddPost = ({ selectedImage }) => {
     console.log("change in img");
     if (gifUrl) {
       setPostImage(gifUrl);
+      setHasVideo(false);
       //persist post text after an image/gif is selected
       PostUtils.postInputData(imageInputRef, postData, "", setPostData);
     } else if (image) {
       setPostImage(image);
+      setHasVideo(false);
+      PostUtils.postInputData(imageInputRef, postData, "", setPostData);
+    } else if (video) {
+      setHasVideo(true);
+      setPostImage(video);
       PostUtils.postInputData(imageInputRef, postData, "", setPostData);
     }
-  }, [gifUrl, image]);
+  }, [gifUrl, image, video, postData]);
 
   useEffect(() => {
     if (!loading && apiResponse == "success") {
@@ -198,6 +206,7 @@ const AddPost = ({ selectedImage }) => {
                 selectedPostImage ||
                 gifUrl ||
                 image ||
+                hasVideo ||
                 postData?.gifUrl ||
                 postData?.image
                   ? "700px"
@@ -269,7 +278,7 @@ const AddPost = ({ selectedImage }) => {
               </>
             )}
 
-            {/* If user upload post image */}
+            {/* If user upload/select post image/gif/video */}
             {postImage && (
               <>
                 <div className="modal-box-image-form">
@@ -298,12 +307,20 @@ const AddPost = ({ selectedImage }) => {
                     >
                       <FaTimes />
                     </div>
-                    <img
-                      data-testid="post-image"
-                      className="post-image"
-                      src={`${postImage}`}
-                      alt=""
-                    />
+                    {!hasVideo && (
+                      <img
+                        data-testid="post-image"
+                        className="post-image"
+                        src={`${postImage}`}
+                        alt=""
+                      />
+                    )}
+
+                    {hasVideo && (
+                      <div>
+                        <video width="100%" controls src={`${video}`} />
+                      </div>
+                    )}
                   </div>
                 </div>
               </>

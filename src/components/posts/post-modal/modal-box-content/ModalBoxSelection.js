@@ -1,4 +1,5 @@
 import photo from "./../../../../assets/images/photo.png";
+import video from "./../../../../assets/images/video.png";
 import gif from "./../../../../assets/images/gif.png";
 import feeling from "./../../../../assets/images/feeling.png";
 import Input from "../../../inputs/Input";
@@ -10,11 +11,12 @@ import { ImageUtils } from "../../../../services/utils/image-utils.service";
 import PropTypes from "prop-types";
 import { toggleGifModal } from "../../../../redux-toolkit/reducers/modal/modal.reducer";
 
-const ModalBoxSelection = ({ setSelectedPostImage }) => {
+const ModalBoxSelection = ({ setSelectedPostImage, setSelectedVideo }) => {
   const { feelingIsOpen, gifModalIsOpen } = useSelector((state) => state.modal);
   const { post } = useSelector((state) => state.post);
   const feelingsRef = useRef(null);
   const fileInputRef = useRef(null);
+  const videoInputRef = useRef(null);
   const [togglefeelings, setToggleFeelings] = useDetectOutsideClick(
     feelingsRef,
     feelingIsOpen
@@ -25,6 +27,11 @@ const ModalBoxSelection = ({ setSelectedPostImage }) => {
   const fileInputCicked = () => {
     //triggers input as clicked
     fileInputRef.current.click();
+  };
+
+  const videoInputCicked = () => {
+    //triggers input as clicked
+    videoInputRef.current.click();
   };
 
   const handleFileChange = (event) => {
@@ -38,6 +45,11 @@ const ModalBoxSelection = ({ setSelectedPostImage }) => {
     );
   };
 
+  const handleVideoFileChange = (event) => {
+    // console.log(event.target.files[0]);
+    ImageUtils.addFileToRedux(event, post, setSelectedVideo, dispatch, "video");
+  };
+
   return (
     <>
       {togglefeelings && (
@@ -47,6 +59,7 @@ const ModalBoxSelection = ({ setSelectedPostImage }) => {
       )}
       <div className="modal-box-selection" data-testid="modal-box-selection">
         <ul className="post-form-list" data-testid="list-item">
+          {/* image selection */}
           <li
             className="post-form-list-item image-select"
             onClick={fileInputCicked}
@@ -81,6 +94,27 @@ const ModalBoxSelection = ({ setSelectedPostImage }) => {
           >
             <img src={feeling} alt="" /> Feeling
           </li>
+          {/* video selection */}
+          <li
+            className="post-form-list-item image-select"
+            onClick={videoInputCicked}
+          >
+            <Input
+              name="video"
+              ref={videoInputRef}
+              type="file"
+              className="file-input"
+              onClick={() => {
+                // clears previously selected image to avoid bug when selecting img 2nd time
+                if (videoInputRef.current) {
+                  console.log("clearing previous file");
+                  videoInputRef.current.value = null;
+                }
+              }}
+              handleChange={handleVideoFileChange}
+            />
+            <img src={video} alt="" /> Video
+          </li>
         </ul>
       </div>
       ;
@@ -90,5 +124,6 @@ const ModalBoxSelection = ({ setSelectedPostImage }) => {
 
 ModalBoxSelection.propTypes = {
   setSelectedPostImage: PropTypes.func,
+  setSelectedVideo: PropTypes.func,
 };
 export default ModalBoxSelection;

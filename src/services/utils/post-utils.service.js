@@ -43,6 +43,7 @@ export class PostUtils {
   ) {
     postData.gifUrl = "";
     postData.image = "";
+    postData.video = "";
     setSelectedPostImage(null);
     setPostImage("");
 
