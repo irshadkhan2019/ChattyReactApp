@@ -43,6 +43,7 @@ const AddPost = ({ selectedImage, selectedPostVideo }) => {
   const [disable, setDisable] = useState(true);
   const [apiResponse, setApiResponse] = useState(false);
   const [selectedPostImage, setSelectedPostImage] = useState();
+  const [selectedVideo, setSelectedVideo] = useState();
   const counterRef = useRef(null);
   const inputRef = useRef(null);
   const imageInputRef = useRef(null);
@@ -84,6 +85,7 @@ const AddPost = ({ selectedImage, selectedPostVideo }) => {
   };
 
   const clearImage = () => {
+    setSelectedVideo(null); //clear video
     PostUtils.clearImage(
       postData,
       " ",
@@ -108,8 +110,13 @@ const AddPost = ({ selectedImage, selectedPostVideo }) => {
       postData.gifUrl = gifUrl;
       postData.profilePicture = profile?.profilePicture;
 
-      //if user selects post Image
-      if (selectedPostImage || selectedImage) {
+      //if user selects post Image/video
+      if (
+        selectedPostImage ||
+        selectedImage ||
+        selectedVideo ||
+        selectedPostVideo
+      ) {
         //convert to base64 encoded string
         let result = "";
         if (selectedPostImage) {
@@ -118,8 +125,23 @@ const AddPost = ({ selectedImage, selectedPostVideo }) => {
         if (selectedImage) {
           result = await ImageUtils.readAsBase64(selectedImage);
         }
-        const response = await PostUtils.sendPostWithImageRequest(
-          result, //its image base64 string
+        if (selectedVideo) {
+          result = await ImageUtils.readAsBase64(selectedVideo);
+        }
+        if (selectedPostVideo) {
+          result = await ImageUtils.readAsBase64(selectedPostVideo);
+        }
+        const type = selectedPostImage || selectedImage ? "image" : "video";
+        if (type === "image") {
+          postData.image = result;
+          postData.video = "";
+        } else {
+          postData.image = "";
+          postData.video = result;
+        }
+
+        const response = await PostUtils.sendPostWithFileRequest(
+          type, //its image/video
           postData,
           imageInputRef,
           setApiResponse,
@@ -127,6 +149,7 @@ const AddPost = ({ selectedImage, selectedPostVideo }) => {
           dispatch
         );
         if (response && response.data.message) {
+          setHasVideo(false);
           PostUtils.closePostModal(dispatch);
           Utils.dispatchNotification(
             response.data.message,
@@ -142,6 +165,7 @@ const AddPost = ({ selectedImage, selectedPostVideo }) => {
         if (response) {
           setApiResponse("success");
           setLoading(false);
+          setHasVideo(false);
           PostUtils.closePostModal(dispatch);
           Utils.dispatchNotification(
             response.data.message,
@@ -151,6 +175,7 @@ const AddPost = ({ selectedImage, selectedPostVideo }) => {
         }
       }
     } catch (error) {
+      setHasVideo(false);
       PostUtils.dispatchNotification(
         error.response.data.message,
         "error",
@@ -166,7 +191,9 @@ const AddPost = ({ selectedImage, selectedPostVideo }) => {
   }, []);
 
   useEffect(() => {
-    console.log("change in img");
+    // console.log("change in img");
+    // console.log("SELECTED POST VIDEO", selectedPostVideo);
+    // console.log("SELECTED  VIDEO", selectedVideo);
     if (gifUrl) {
       setPostImage(gifUrl);
       setHasVideo(false);
@@ -357,7 +384,10 @@ const AddPost = ({ selectedImage, selectedPostVideo }) => {
             </span>
 
             {/* Display gif photo feeling option to select */}
-            <ModalBoxSelection setSelectedPostImage={setSelectedPostImage} />
+            <ModalBoxSelection
+              setSelectedPostImage={setSelectedPostImage}
+              setSelectedVideo={setSelectedVideo}
+            />
 
             <div className="modal-box-button" data-testid="post-button">
               <Button
@@ -393,7 +423,8 @@ const AddPost = ({ selectedImage, selectedPostVideo }) => {
 };
 
 AddPost.propTypes = {
-  selectedImage: PropTypes.string,
+  selectedImage: PropTypes.any,
+  selectedPostVideo: PropTypes.any,
 };
 
 export default AddPost;

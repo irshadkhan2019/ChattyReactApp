@@ -90,8 +90,8 @@ export class PostUtils {
     Utils.dispatchNotification(message, type, dispatch);
   }
 
-  static async sendPostWithImageRequest(
-    fileResult,
+  static async sendPostWithFileRequest(
+    type,
     postData,
     imageInputRef,
     setApiResponse,
@@ -99,12 +99,15 @@ export class PostUtils {
     dispatch
   ) {
     try {
-      postData.image = fileResult;
+      // postData.image = fileResult;
       if (imageInputRef?.current) {
         imageInputRef.current.textContent = postData.post;
       }
       console.log("post data b4 posting", postData);
-      const response = await postService.createPostWithImage(postData);
+      const response =
+        type == "image"
+          ? await postService.createPostWithImage(postData)
+          : await postService.createPostWithVideo(postData);
 
       if (response) {
         setApiResponse("success");

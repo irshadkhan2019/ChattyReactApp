@@ -16,6 +16,11 @@ class PostService {
     return response;
   }
 
+  async createPostWithVideo(body) {
+    const response = await axios.post("/post/video/post", body);
+    return response;
+  }
+
   async updatePostWithImage(postId, body) {
     const response = await axios.put(`/post/image/${postId}`, body);
     return response;
