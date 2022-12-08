@@ -229,6 +229,26 @@ const Post = ({ post, showIcons }) => {
                   />
                 </div>
               )}
+
+              {/* display post having video */}
+              {post?.videoId && post?.bgColor === "#ffffff" && (
+                <div
+                  data-testid="post-video"
+                  className="image-display-flex"
+                  style={{
+                    height: "600px",
+                    backgroundColor: `#333`,
+                  }}
+                >
+                  <video
+                    width={"100%"}
+                    height="600px"
+                    controls
+                    src={Utils.getPostVideo(post.videoId, post.videoVersion)}
+                  />
+                </div>
+              )}
+
               {(post?.reactions.length > 0 || post?.commentsCount > 0) && (
                 <hr />
               )}

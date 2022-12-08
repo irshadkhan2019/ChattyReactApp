@@ -153,6 +153,14 @@ export class Utils {
     return imageUrl;
   };
 
+  static getPostVideo = (videoId, videoVersion) => {
+    let videoUrl = "";
+    if (videoId && videoVersion) {
+      videoUrl = `https://res.cloudinary.com/dnslnpn4l/video/upload/v${videoVersion}/${videoId}.mp4`;
+    }
+    return videoUrl;
+  };
+
   static removeUserFromList(list, userId) {
     const index = findIndex(list, (id) => id === userId);
     list.splice(index, 1);
