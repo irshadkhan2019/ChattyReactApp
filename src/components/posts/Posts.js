@@ -26,7 +26,7 @@ const Posts = ({ allposts, postsLoading, userFollowing }) => {
         posts.length > 0 &&
         posts.map((post) => (
           <div key={post?._id} data-testid="posts-item">
-            <Post post={post} showIcons={true} />
+            <Post post={post} showIcons={false} />
           </div>
         ))}
       {loading &&

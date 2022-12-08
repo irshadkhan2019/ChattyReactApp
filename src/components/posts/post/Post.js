@@ -11,7 +11,7 @@ import "./Post.scss";
 import useLocalStorage from "./../../../hooks/useLocalStorage";
 import CommentInputBox from "../comments/comment-input/CommentInputBox";
 import CommentsModal from "../comments/comments-modal/CommentsModal";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Utils } from "../../../services/utils/utils.service";
 import ImageModal from "../../image-modal/ImageModal";
 import {
@@ -24,6 +24,7 @@ import {
 } from "../../../redux-toolkit/reducers/post/post.reducer";
 import Dialog from "../../dialog/Dialog";
 import { postService } from "../../../services/api/post/post.service";
+import { ImageUtils } from "../../../services/utils/image-utils.service";
 
 const Post = ({ post, showIcons }) => {
   const { _id } = useSelector((state) => state.post);
@@ -31,6 +32,7 @@ const Post = ({ post, showIcons }) => {
     useSelector((state) => state.modal);
   const [showImageModal, setShowImageModal] = useState(false);
   const [imageUrl, setImageUrl] = useState("");
+  const [backgroundImageColor, setBackgroundImageColor] = useState("");
   const selectedPostId = useLocalStorage("selectedpostId", "get");
   const dispatch = useDispatch();
 
@@ -70,6 +72,22 @@ const Post = ({ post, showIcons }) => {
     dispatch(toggleDeleteDialog({ toggle: !deleteDialogIsOpen }));
     dispatch(updatePostItem(post));
   };
+
+  const getBackgroundImageColor = async (post) => {
+    let imageUrl = "";
+    if (post?.imgId && !post?.gifUrl && post?.bgColor === "#ffffff") {
+      imageUrl = Utils.getPostImage(post.imgId, post.imgVersion);
+    } else if (post?.gifUrl && post?.bgColor === "#ffffff") {
+      imageUrl = post.gifUrl;
+    }
+
+    const bgColor = await ImageUtils.getBackgroundImageColor(imageUrl);
+    setBackgroundImageColor(bgColor);
+  };
+
+  useEffect(() => {
+    getBackgroundImageColor(post);
+  }, [post]);
 
   return (
     <>
@@ -165,11 +183,15 @@ const Post = ({ post, showIcons }) => {
                   {post?.post}
                 </div>
               )}
-
+              {/* display post having image */}
               {post?.imgId && !post?.gifUrl && post?.bgColor === "#ffffff" && (
                 <div
                   data-testid="post-image"
                   className="image-display-flex"
+                  style={{
+                    height: "600px",
+                    backgroundColor: `${backgroundImageColor}`,
+                  }}
                   onClick={() => {
                     setShowImageModal(!showImageModal);
                     setImageUrl(
@@ -181,19 +203,30 @@ const Post = ({ post, showIcons }) => {
                     className="post-image"
                     src={Utils.getPostImage(post.imgId, post.imgVersion)}
                     alt=""
+                    style={{ objectFit: "contain" }}
                   />
                 </div>
               )}
 
+              {/* display post having gif */}
               {post?.gifUrl && post?.bgColor === "#ffffff" && (
                 <div
                   className="image-display-flex"
+                  style={{
+                    height: "600px",
+                    backgroundColor: `${backgroundImageColor}`,
+                  }}
                   onClick={() => {
                     setShowImageModal(!showImageModal);
                     setImageUrl(post?.gifUrl);
                   }}
                 >
-                  <img className="post-image" src={`${post?.gifUrl}`} alt="" />
+                  <img
+                    className="post-image"
+                    src={`${post?.gifUrl}`}
+                    alt=""
+                    style={{ objectFit: "contain" }}
+                  />
                 </div>
               )}
               {(post?.reactions.length > 0 || post?.commentsCount > 0) && (
