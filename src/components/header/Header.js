@@ -105,7 +105,7 @@ const Header = () => {
 
       setNotifications(mappedNotifications);
 
-      //emit event to server abt his connection
+      //emit event to server abt his connection to add him in online users list
       socketService?.socket.emit("setup", { userId: storedUsername });
     } catch (error) {
       Utils.dispatchNotification(
