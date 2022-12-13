@@ -7,6 +7,7 @@ export const getConversationList = createAsyncThunk(
   async (name, { dispatch }) => {
     try {
       const response = await chatService.getChatConversationList();
+      console.log("getChatConversationList", response.data);
       return response.data;
     } catch (error) {
       Utils.dispatchNotification(

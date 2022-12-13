@@ -1,17 +1,25 @@
-import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useCallback, useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, createSearchParams, useLocation } from "react-router-dom";
+import { getPosts } from "../../redux-toolkit/api/posts";
+import { chatService } from "../../services/api/chat/chat.service";
+import { socketService } from "../../services/sockets/socket.service";
+import { ChatUtils } from "../../services/utils/chat.utils.service";
 import {
   fontAwesomeIcons,
   sideBarItems,
 } from "../../services/utils/static.data";
+import { Utils } from "../../services/utils/utils.service";
 import "./Sidebar.scss";
 
 const Sidebar = () => {
   const { profile } = useSelector((state) => state.user);
+  const { chatList } = useSelector((state) => state.chat);
   const [sidebar, setSideBar] = useState([]);
+  const [chatPageName, setChatPageName] = useState("");
   const location = useLocation();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const checkUrl = (name) => {
     return location.pathname.includes(name.toLowerCase());
@@ -29,9 +37,100 @@ const Sidebar = () => {
       })}`;
     }
 
+    if (name === "Streams") {
+      dispatch(getPosts());
+    }
+
+    if (name === "Chat") {
+      setChatPageName("Chat");
+    } else {
+      leaveChatPage();
+      setChatPageName("");
+    }
+
+    socketService?.socket?.off("message received");
     navigate(url);
   };
 
+  const markMessagesAsRead = useCallback(
+    async (user) => {
+      try {
+        const receiverId =
+          user?.receiverUsername !== profile?.username
+            ? user?.receiverId
+            : user?.senderId;
+        if (user?.receiverUsername === profile?.username && !user.isRead) {
+          await chatService.markMessagesAsRad(profile?._id, receiverId);
+        }
+        const userTwoName =
+          user?.receiverUsername !== profile?.username
+            ? user?.receiverUsername
+            : user?.senderUsername;
+        await chatService.addChatUsers({
+          userOne: profile?.username,
+          userTwo: userTwoName,
+        });
+      } catch (error) {
+        Utils.dispatchNotification(
+          error.response.data.message,
+          "error",
+          dispatch
+        );
+      }
+    },
+    [dispatch, profile]
+  );
+
+  const createChatUrlParams = useCallback(
+    (url) => {
+      if (chatList.length) {
+        const chatUser = chatList[0];
+        const params = ChatUtils.chatUrlParams(chatUser, profile);
+        ChatUtils.joinRoomEvent(chatUser, profile);
+        return `${url}?${createSearchParams(params)}`;
+      } else {
+        return url;
+      }
+    },
+    [chatList, profile]
+  );
+
+  const leaveChatPage = async () => {
+    try {
+      const chatUser = chatList[0];
+      const userTwoName =
+        chatUser?.receiverUsername !== profile?.username
+          ? chatUser?.receiverUsername
+          : chatUser?.senderUsername;
+      ChatUtils.privateChatMessages = [];
+      await chatService.removeChatUsers({
+        userOne: profile?.username,
+        userTwo: userTwoName,
+      });
+    } catch (error) {
+      Utils.dispatchNotification(
+        error.response.data.message,
+        "error",
+        dispatch
+      );
+    }
+  };
+
+  useEffect(() => {
+    if (chatPageName === "Chat") {
+      const url = createChatUrlParams("/app/social/chat/messages");
+      navigate(url);
+      if (chatList.length && !chatList[0].isRead) {
+        markMessagesAsRead(chatList[0]);
+      }
+    }
+  }, [
+    chatList,
+    chatPageName,
+    createChatUrlParams,
+    markMessagesAsRead,
+    navigate,
+  ]);
   return (
     <div className="app-side-menu">
       <div className="side-menu">

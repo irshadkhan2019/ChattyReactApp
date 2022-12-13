@@ -28,6 +28,7 @@ const chatSlice = createSlice({
     });
     builder.addCase(getConversationList.fulfilled, (state, action) => {
       const { list } = action.payload;
+      state.chatList = [...list];
       state.isLoading = false;
     });
     builder.addCase(getConversationList.rejected, (state) => {

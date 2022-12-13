@@ -187,6 +187,10 @@ const ChatList = () => {
     setChatMessageList(chatList);
   }, [chatList]);
 
+  useEffect(() => {
+    ChatUtils.socketIOChatList(profile, chatMessageList, setChatMessageList);
+  }, [chatMessageList, profile]);
+
   return (
     <div data-testid="chatList">
       <div className="conversation-container">
@@ -234,6 +238,7 @@ const ChatList = () => {
         </div>
 
         <div className="conversation-container-body">
+          {console.log("chatMessageList", chatMessageList)}
           {!search && (
             <div className="conversation">
               {chatMessageList.map((data) => (
