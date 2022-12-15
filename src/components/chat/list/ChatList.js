@@ -32,6 +32,7 @@ const ChatList = () => {
   let [chatMessageList, setChatMessageList] = useState([]);
   const debounceValue = useDebounce(search, 2000);
   const [searchParams] = useSearchParams();
+  const [rendered, setRendered] = useState(false);
   const dispatch = useDispatch();
   const location = useLocation();
   const navigate = useNavigate();
@@ -188,8 +189,11 @@ const ChatList = () => {
   }, [chatList]);
 
   useEffect(() => {
-    ChatUtils.socketIOChatList(profile, chatMessageList, setChatMessageList);
-  }, [chatMessageList, profile]);
+    if (rendered) {
+      ChatUtils.socketIOChatList(profile, chatMessageList, setChatMessageList);
+    }
+    if (!rendered) setRendered(true);
+  }, [chatMessageList, profile, rendered]);
 
   return (
     <div data-testid="chatList">
