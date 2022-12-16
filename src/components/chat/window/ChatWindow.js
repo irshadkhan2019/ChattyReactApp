@@ -12,6 +12,7 @@ import { ChatUtils } from "../../../services/utils/chat.utils.service";
 import { Utils } from "../../../services/utils/utils.service";
 import Avatar from "../../avatar/Avatar";
 import "./ChatWindow.scss";
+import MessageDisplay from "./message-display/MessageDisplay";
 import MessageInput from "./message-input/MessageInput";
 
 const ChatWindow = () => {
@@ -107,6 +108,35 @@ const ChatWindow = () => {
     }
   };
 
+  const updateMessageReaction = async (body) => {
+    try {
+      await chatService.updateMessageReaction(body);
+    } catch (error) {
+      Utils.dispatchNotification(
+        error.response.data.message,
+        "error",
+        dispatch
+      );
+    }
+  };
+
+  const deleteChatMessage = async (senderId, receiverId, messageId, type) => {
+    try {
+      await chatService.markMessageAsDeleted(
+        messageId,
+        senderId,
+        receiverId,
+        type
+      );
+    } catch (error) {
+      Utils.dispatchNotification(
+        error.response.data.message,
+        "error",
+        dispatch
+      );
+    }
+  };
+
   useEffect(() => {
     if (rendered) {
       getUserProfileByUserId();
@@ -175,7 +205,14 @@ const ChatWindow = () => {
             </div>
           </div>
           <div className="chat-window">
-            <div className="chat-window-message">Message display component</div>
+            <div className="chat-window-message">
+              <MessageDisplay
+                chatMessages={chatMessages}
+                profile={profile}
+                updateMessageReaction={updateMessageReaction}
+                deleteChatMessage={deleteChatMessage}
+              />
+            </div>
             <div className="chat-window-input">
               <MessageInput setChatMessage={sendChatMessage} />
             </div>
