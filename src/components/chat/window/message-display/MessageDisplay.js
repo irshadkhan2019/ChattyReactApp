@@ -8,6 +8,7 @@ import useDetectOutsideClick from "./../../../../hooks/useDetectOutsideClick";
 import useChatScrollToBottom from "./../../../../hooks/useChatScrollToBottom";
 import ImageModal from "./../../../image-modal/ImageModal";
 import Dialog from "./../../../dialog/Dialog";
+import LeftMessageDisplay from "./left-message-display/LeftMessageDisplay";
 
 const MessageDisplay = ({
   chatMessages,
@@ -120,32 +121,52 @@ const MessageDisplay = ({
                   </div>
                 </div>
               ))}
-            {chat.receiverUsername === profile?.username ||
-              (chat.senderUsername === profile?.username && (
-                <>
-                  {chat.senderUsername === profile?.username && (
-                    <RightMessageDisplay
-                      chat={chat}
-                      lastChatMessage={chatMessages[chatMessages.length - 1]}
-                      profile={profile}
-                      toggleReaction={toggleReaction}
-                      showReactionIcon={showReactionIcon}
-                      index={index}
-                      activeElementIndex={activeElementIndex}
-                      reactionRef={reactionRef}
-                      setToggleReaction={setToggleReaction}
-                      handleReactionClick={handleReactionClick}
-                      deleteMessage={deleteMessage}
-                      showReactionIconOnHover={showReactionIconOnHover}
-                      setActiveElementIndex={setActiveElementIndex}
-                      setShowImageModal={setShowImageModal}
-                      setImageUrl={setImageUrl}
-                      showImageModal={showImageModal}
-                      setSelectedReaction={setSelectedReaction}
-                    />
-                  )}
-                </>
-              ))}
+            {(chat.receiverUsername === profile?.username ||
+              chat.senderUsername === profile?.username) && (
+              <>
+                {chat.senderUsername === profile?.username && (
+                  <RightMessageDisplay
+                    chat={chat}
+                    lastChatMessage={chatMessages[chatMessages.length - 1]}
+                    profile={profile}
+                    toggleReaction={toggleReaction}
+                    showReactionIcon={showReactionIcon}
+                    index={index}
+                    activeElementIndex={activeElementIndex}
+                    reactionRef={reactionRef}
+                    setToggleReaction={setToggleReaction}
+                    handleReactionClick={handleReactionClick}
+                    deleteMessage={deleteMessage}
+                    showReactionIconOnHover={showReactionIconOnHover}
+                    setActiveElementIndex={setActiveElementIndex}
+                    setShowImageModal={setShowImageModal}
+                    setImageUrl={setImageUrl}
+                    showImageModal={showImageModal}
+                    setSelectedReaction={setSelectedReaction}
+                  />
+                )}
+                {chat.receiverUsername === profile?.username && (
+                  <LeftMessageDisplay
+                    chat={chat}
+                    profile={profile}
+                    toggleReaction={toggleReaction}
+                    showReactionIcon={showReactionIcon}
+                    index={index}
+                    activeElementIndex={activeElementIndex}
+                    reactionRef={reactionRef}
+                    setToggleReaction={setToggleReaction}
+                    handleReactionClick={handleReactionClick}
+                    deleteMessage={deleteMessage}
+                    showReactionIconOnHover={showReactionIconOnHover}
+                    setActiveElementIndex={setActiveElementIndex}
+                    setShowImageModal={setShowImageModal}
+                    setImageUrl={setImageUrl}
+                    showImageModal={showImageModal}
+                    setSelectedReaction={setSelectedReaction}
+                  />
+                )}
+              </>
+            )}
           </div>
         ))}
       </div>
