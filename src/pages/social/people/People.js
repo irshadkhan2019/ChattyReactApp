@@ -15,6 +15,7 @@ import { ProfileUtils } from "./../../../services/utils/profile-utils.service";
 import { followerService } from "../../../services/api/followers/follower.service";
 import { FollowersUtils } from "../../../services/utils/followers-utils.service";
 import { socketService } from "../../../services/sockets/socket.service";
+import { ChatUtils } from "./../../../services/utils/chat.utils.service";
 
 const People = () => {
   const { profile } = useSelector((state) => state.user);
@@ -113,6 +114,7 @@ const People = () => {
       setFollowing,
       setUsers
     );
+    ChatUtils.usersOnline(setOnlineUsers);
     console.log("NEW FOLLOWING LIST", following);
   }, [following, users]);
 

@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { orderBy } from "lodash";
 import { getConversationList } from "../../api/chat";
 
 const initialState = {
@@ -28,8 +29,9 @@ const chatSlice = createSlice({
     });
     builder.addCase(getConversationList.fulfilled, (state, action) => {
       const { list } = action.payload;
-      state.chatList = [...list];
       state.isLoading = false;
+      const sortedList = orderBy(list, ["createdAt"], ["desc"]);
+      state.chatList = [...sortedList];
     });
     builder.addCase(getConversationList.rejected, (state) => {
       state.isLoading = false;
