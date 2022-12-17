@@ -27,6 +27,12 @@ class UserService {
     return response;
   }
 
+  async getUserProfileByUsername(username, userId, uId) {
+    const response = await axios.get(
+      `/user/profile/posts/${username}/${userId}/${uId} `
+    );
+    return response;
+  }
   async searchUsers(query) {
     const response = await axios.get(`/user/profile/search/${query}`);
     return response;

@@ -6,6 +6,8 @@ import Avatar from "../avatar/Avatar";
 import Input from "../inputs/Input";
 import { FaCamera } from "react-icons/fa";
 import "./BackgroundHeader.scss";
+import { useEffect } from "react";
+import ImageGridModal from "../image-grid-modal/ImageGridModal";
 
 const BackgroundHeader = ({
   user,
@@ -45,6 +47,8 @@ const BackgroundHeader = ({
     setShowSpinner(false);
   };
 
+  const onAddProfileClick = () => setIsActive(!isActive);
+
   const BackgroundSelectDropdown = () => {
     return (
       <nav className="menu" data-testid="menu">
@@ -60,8 +64,8 @@ const BackgroundHeader = ({
             </li>
           )}
           <li
-            onClick={() => {
-              backgroundFileInputClicked();
+            onClick={(event) => {
+              backgroundFileInputClicked(event);
               setIsActive(false);
               setShowImagesModal(false);
             }}
@@ -73,33 +77,64 @@ const BackgroundHeader = ({
     );
   };
 
+  useEffect(() => {
+    if (!hasImage) {
+      setShowSpinner(false);
+    }
+  }, [hasImage]);
+
   return (
     <>
+      {showImagesModal && (
+        <ImageGridModal
+          images={galleryImages}
+          closeModal={() => setShowImagesModal(false)}
+          selectedImage={(event) => {
+            setSelectedBackground(event);
+            selectedFileImage(event, "background");
+          }}
+        />
+      )}
       <div className="profile-banner" data-testid="profile-banner">
-        <div
-          className="save-changes-container"
-          data-testid="save-changes-container"
-        >
-          <div className="save-changes-box">
-            <div className="spinner-container">
-              <Spinner bgColor="white" />
-            </div>
-            <div className="save-changes-buttons">
-              <div className="save-changes-buttons-bg">
-                <Button
-                  label="Cancel"
-                  className="cancel change-btn"
-                  disabled={false}
-                />
-                <Button
-                  label="Save Changes"
-                  className="save change-btn"
-                  disabled={false}
-                />
+        {hasImage && (
+          <div
+            className="save-changes-container"
+            data-testid="save-changes-container"
+          >
+            <div className="save-changes-box">
+              <div className="spinner-container">
+                {showSpinner && !hasError && <Spinner bgColor="white" />}
+              </div>
+              <div className="save-changes-buttons">
+                <div className="save-changes-buttons-bg">
+                  <Button
+                    label="Cancel"
+                    className="cancel change-btn"
+                    disabled={false}
+                    handleClick={() => {
+                      setShowSpinner(false);
+                      cancelFileSelection();
+                      hideSaveChangesContainer();
+                    }}
+                  />
+                  <Button
+                    label="Save Changes"
+                    className="save change-btn"
+                    disabled={false}
+                    handleClick={() => {
+                      setShowSpinner(true);
+                      const type = selectedBackground
+                        ? "background"
+                        : "profile";
+                      saveImage(type);
+                    }}
+                  />
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        )}
+
         <div
           data-testid="profile-banner-image"
           className="profile-banner-image"
@@ -117,7 +152,7 @@ const BackgroundHeader = ({
               bgColor={user?.avatarColor}
               textColor="#ffffff"
               size={180}
-              avatarSrc=""
+              avatarSrc={selectedProfileImage || user?.profilePicture}
             />
             <div
               className="profile-pic-select"
