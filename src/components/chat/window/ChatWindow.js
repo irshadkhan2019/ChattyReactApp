@@ -158,7 +158,7 @@ const ChatWindow = () => {
 
     ChatUtils.usersOnline(setOnlineUsers());
     ChatUtils.usersOnChatPage();
-  }, [chatMessages, searchParams, rendered]);
+  }, [searchParams, rendered]);
 
   useEffect(() => {
     ChatUtils.socketIOMessageReaction(

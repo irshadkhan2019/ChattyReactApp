@@ -16,7 +16,7 @@ import { useDispatch, useSelector } from "react-redux";
 import Dropdown from "../dropdown/Dropdown";
 import useEffectOnce from "./../../hooks/useEffectOnce";
 import { ProfileUtils } from "../../services/utils/profile-utils.service";
-import { useNavigate } from "react-router-dom";
+import { createSearchParams, useLocation, useNavigate } from "react-router-dom";
 import useLocalStorage from "./../../hooks/useLocalStorage";
 import useSessionStorage from "./../../hooks/useSessionStorage";
 import { userService } from "./../../services/api/user/user.service";
@@ -25,9 +25,14 @@ import { notificationService } from "../../services/api/notifications/notificati
 import { NotificationUtils } from "../../services/utils/notification-utils.service";
 import NotificationPreview from "../dialog/NotificationPreview";
 import { socketService } from "../../services/sockets/socket.service";
+import { sumBy } from "lodash";
+import { ChatUtils } from "../../services/utils/chat.utils.service";
+import { chatService } from "../../services/api/chat/chat.service";
+import { getConversationList } from "./../../redux-toolkit/api/chat";
 
 const Header = () => {
   const { profile } = useSelector((state) => state.user);
+  const { chatList } = useSelector((state) => state.chat);
   const [notifications, setNotifications] = useState([]);
   const [notificationCount, setNotificationCount] = useState(0);
   const [notificationDialogueContent, setNotificationDialogueContent] =
@@ -38,6 +43,11 @@ const Header = () => {
       reaction: "",
       senderName: "",
     });
+
+  const [messageCount, setMessageCount] = useState(0);
+  const [messageNotifications, setMessageNotifications] = useState([]);
+  const location = useLocation();
+
   const [environment, setEnvironment] = useState("");
   const [settings, setSettings] = useState([]);
 
@@ -68,8 +78,39 @@ const Header = () => {
     environment === "DEV" ? "#50b5ff" : environment === "STG" ? "#e9710f" : ""
   }`;
 
-  const openChatPage = () => {
-    console.log("opening chat page");
+  const openChatPage = async (notification) => {
+    try {
+      const params = ChatUtils.chatUrlParams(notification, profile);
+      ChatUtils.joinRoomEvent(notification, profile);
+      ChatUtils.privateChatMessages = [];
+      const receiverId =
+        notification?.receiverUsername !== profile?.username
+          ? notification?.receiverId
+          : notification?.senderId;
+      if (
+        notification?.receiverUsername === profile?.username &&
+        !notification.isRead
+      ) {
+        await chatService.markMessagesAsRead(profile?._id, receiverId);
+      }
+      const userTwoName =
+        notification?.receiverUsername !== profile?.username
+          ? notification?.receiverUsername
+          : notification?.senderUsername;
+      await chatService.addChatUsers({
+        userOne: profile?.username,
+        userTwo: userTwoName,
+      });
+      navigate(`/app/social/chat/messages?${createSearchParams(params)}`);
+      setIsMessageActive(false);
+      dispatch(getConversationList());
+    } catch (error) {
+      Utils.dispatchNotification(
+        error.response.data.message,
+        "error",
+        dispatch
+      );
+    }
   };
 
   const onLogout = async () => {
@@ -157,7 +198,15 @@ const Header = () => {
   useEffect(() => {
     const env = Utils.appEnvironment();
     setEnvironment(env);
-  }, []);
+    const count = sumBy(chatList, (notification) => {
+      return !notification.isRead &&
+        notification.receiverUsername === profile?.username
+        ? 1
+        : 0;
+    });
+    setMessageCount(count);
+    setMessageNotifications(chatList);
+  }, [chatList, profile]);
 
   //Listen for socketIo events(insert update delete notification) emitted via server
   useEffect(() => {
@@ -168,7 +217,15 @@ const Header = () => {
       "headerNotification",
       setNotificationCount
     );
-  }, [profile, notifications]);
+    NotificationUtils.socketIOMessageNotification(
+      profile,
+      messageNotifications,
+      setMessageNotifications,
+      setMessageCount,
+      dispatch,
+      location
+    );
+  }, [profile, notifications, location, dispatch, messageNotifications]);
 
   return (
     <>
@@ -181,8 +238,8 @@ const Header = () => {
             <div ref={messageRef}>
               <MessageSidebar
                 profile={profile}
-                messageCount={0}
-                messageNotifications={[]}
+                messageCount={messageCount}
+                messageNotifications={messageNotifications}
                 openChatPage={openChatPage}
               />
             </div>
@@ -261,10 +318,12 @@ const Header = () => {
               >
                 <span className="header-list-name">
                   <FaRegEnvelope className="header-list-icon" />
-                  <span
-                    className="bg-danger-dots dots"
-                    data-testid="messages-dots"
-                  ></span>
+                  {messageCount > 0 && (
+                    <span
+                      className="bg-danger-dots dots"
+                      data-testid="messages-dots"
+                    ></span>
+                  )}
                 </span>
                 &nbsp;
               </li>

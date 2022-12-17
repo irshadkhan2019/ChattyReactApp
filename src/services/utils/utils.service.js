@@ -166,4 +166,8 @@ export class Utils {
     list.splice(index, 1);
     return list;
   }
+
+  static checkUrl(url, word) {
+    return url.includes(word);
+  }
 } //eoc
