@@ -15,9 +15,9 @@ const ImageGridModal = ({ images, closeModal, selectedImage }) => {
             key={index}
             className="grid-image"
             alt=""
-            src={`${Utils.getImage(data?.imgId, data?.imgVersion)}`}
+            src={`${Utils.getPostImage(data?.imgId, data?.imgVersion)}`}
             onClick={() => {
-              selectedImage(Utils.getImage(data?.imgId, data?.imgVersion));
+              selectedImage(Utils.getPostImage(data?.imgId, data?.imgVersion));
               closeModal();
             }}
           />
