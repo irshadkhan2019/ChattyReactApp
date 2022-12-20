@@ -10,9 +10,19 @@ import { tabItems } from "../../../services/utils/static.data";
 import { Utils } from "../../../services/utils/utils.service";
 import "./Profile.scss";
 import { imageService } from "./../../../services/api/image/image.service";
+import Timeline from "../../../components/timeline/Timeline";
+import FollowerCard from "../followers/FollowerCard";
+import GalleryImage from "../../../components/gallery-image/GalleryImage";
+import ChangePassword from "../../../components/change-password/ChangePassword";
+import NotificationSettings from "../../../components/notification-settings/NotificationSettings";
+import { toggleDeleteDialog } from "../../../redux-toolkit/reducers/modal/modal.reducer";
+import ImageModal from "./../../../components/image-modal/ImageModal";
+import { filter } from "lodash";
+import Dialog from "./../../../components/dialog/Dialog";
 
 const Profile = () => {
   const { profile } = useSelector((state) => state.user);
+  const { deleteDialogIsOpen, data } = useSelector((state) => state.modal);
   const [user, setUser] = useState();
   const [rendered, setRendered] = useState(false);
   const [hasError, setHasError] = useState(false);
@@ -137,6 +147,22 @@ const Profile = () => {
     Utils.dispatchNotification(response.data.message, "success", dispatch);
   };
 
+  const removeImageFromGallery = async (imageId) => {
+    try {
+      dispatch(toggleDeleteDialog({ toggle: false, data: null }));
+      const images = filter(galleryImages, (image) => image._id !== imageId);
+      setGalleryImages(images);
+      await removeImage(`/images/${imageId}`);
+    } catch (error) {
+      setHasError(true);
+      Utils.dispatchNotification(
+        error.response.data.message,
+        "error",
+        dispatch
+      );
+    }
+  };
+
   const getUserImages = useCallback(async () => {
     try {
       const imagesResponse = await imageService.getUserImages(
@@ -162,6 +188,25 @@ const Profile = () => {
 
   return (
     <>
+      {showImageModal && (
+        <ImageModal
+          image={`${imageUrl}`}
+          onCancel={() => setShowImageModal(!showImageModal)}
+          showArrow={false}
+        />
+      )}
+      {deleteDialogIsOpen && (
+        <Dialog
+          title="Are you sure you want to delete this image?"
+          showButtons={true}
+          firstButtonText="Delete"
+          secondButtonText="Cancel"
+          firstBtnHandler={() => removeImageFromGallery(data)}
+          secondBtnHandler={() =>
+            dispatch(toggleDeleteDialog({ toggle: false, data: null }))
+          }
+        />
+      )}
       <div className="profile-wrapper">
         <div className="profile-wrapper-container">
           <div className="profile-header">
@@ -175,7 +220,7 @@ const Profile = () => {
               selectedFileImage={selectedFileImage}
               saveImage={saveImage}
               cancelFileSelection={cancelFileSelection}
-              removeBackgroundImage={() => {}}
+              removeBackgroundImage={removeBackgroundImage}
               tabItems={tabItems(
                 username === profile?.username,
                 username === profile?.username
@@ -185,10 +230,57 @@ const Profile = () => {
               galleryImages={galleryImages}
             />
           </div>
+          <div className="profile-content">
+            {displayContent === "timeline" && (
+              <Timeline userProfileData={userProfileData} loading={loading} />
+            )}
+            {displayContent === "followers" && <FollowerCard userData={user} />}
+            {displayContent === "gallery" && (
+              <>
+                {galleryImages.length > 0 && (
+                  <>
+                    <div className="imageGrid-container">
+                      {galleryImages.map((image) => (
+                        <div key={image._id}>
+                          <GalleryImage
+                            showCaption={false}
+                            showDelete={true}
+                            imgSrc={Utils.getPostImage(
+                              image?.imgId,
+                              image.imgVersion
+                            )}
+                            onClick={() => {
+                              setImageUrl(
+                                Utils.getPostImage(
+                                  image?.imgId,
+                                  image.imgVersion
+                                )
+                              );
+                              setShowImageModal(!showImageModal);
+                            }}
+                            onRemoveImage={(event) => {
+                              event.stopPropagation();
+                              dispatch(
+                                toggleDeleteDialog({
+                                  toggle: !deleteDialogIsOpen,
+                                  data: image?._id,
+                                })
+                              );
+                            }}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                )}
+              </>
+            )}
+            {displayContent === "change password" && <ChangePassword />}
+            {displayContent === "notifications" && <NotificationSettings />}
+          </div>
         </div>
       </div>
     </>
   );
 };
-
 export default Profile;

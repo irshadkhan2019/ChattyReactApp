@@ -86,6 +86,7 @@ const BackgroundHeader = ({
 
   return (
     <>
+      {console.log("selectedBackground", selectedBackground, "url", url)}
       {showImagesModal && (
         <ImageGridModal
           images={galleryImages}
