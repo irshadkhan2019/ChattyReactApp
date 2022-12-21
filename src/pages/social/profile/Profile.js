@@ -188,6 +188,7 @@ const Profile = () => {
 
   return (
     <>
+      {console.log("Uswrprofiledara", userProfileData)}
       {showImageModal && (
         <ImageModal
           image={`${imageUrl}`}
