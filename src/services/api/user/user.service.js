@@ -52,6 +52,10 @@ class UserService {
     const response = await axios.put("/user/profile/social-links", info);
     return response;
   }
+  async changePassword(body) {
+    const response = await axios.put("/user/profile/change-password", body);
+    return response;
+  }
 }
 
 export const userService = new UserService();
