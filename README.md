@@ -1,19 +1,18 @@
-#features
+# features
 
-Signup and signin authentication
-Forgot password and reset password
-Change password when logged in
-Create, read, update and delete posts with images ,videos and gifs
-Post reactions
-Comments
-Followers, following, block and unblock
-Private chat messaging with text, images, gifs, and reactions
-Image upload
-In-app notification and email notification
-Custom components
-Custom React hooks
-Redux implementation using redux-toolkit
-
+1) Signup and signin authentication
+2) Forgot password and reset password
+3) Change password when logged in
+4) Create, read, update and delete posts with images ,videos and gifs
+5) Post reactions
+6) Comments
+7) Followers, following, block and unblock
+8) Private chat messaging with text, images, gifs, and reactions
+9) Image upload
+10) In-app notification and email notification
+11) Custom components
+12) Custom React hooks
+13) Redux implementation using redux-toolkit
 
 # Getting Started with Create React App
 
