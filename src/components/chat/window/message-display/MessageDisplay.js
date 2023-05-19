@@ -14,9 +14,13 @@ const MessageDisplay = ({
   chatMessages,
   profile,
   updateMessageReaction,
-  deleteChatMessage,
+  deleteChatMessage, //fn to delete chat msg
 }) => {
+
+  console.log("Inside msg display chatMessages",chatMessages);
+  //for image modal to show
   const [imageUrl, setImageUrl] = useState("");
+
   const [showReactionIcon, setShowReactionIcon] = useState(false);
   const [showImageModal, setShowImageModal] = useState(false);
   const [deleteDialog, setDeleteDialog] = useState({
@@ -24,22 +28,29 @@ const MessageDisplay = ({
     message: null,
     type: "",
   });
+
   const [activeElementIndex, setActiveElementIndex] = useState(null);
   const [selectedReaction, setSelectedReaction] = useState(null);
   const reactionRef = useRef(null);
+
+  // used to display reaction list in Rightmsgdisplay and leftmsgsdisplay
   const [toggleReaction, setToggleReaction] = useDetectOutsideClick(
     reactionRef,
     false
   );
+
   const scrollRef = useChatScrollToBottom(chatMessages);
 
   const showReactionIconOnHover = (show, index) => {
+    console.log("showReactionIconOnHover",show,index,'active element',activeElementIndex);
     if (index === activeElementIndex || !activeElementIndex) {
       setShowReactionIcon(show);
     }
   };
 
   const handleReactionClick = (body) => {
+    console.log("handleReactionClick passed reaction",body);
+    //based on body reaction type (add,remove) api adds remove reaction from msg
     updateMessageReaction(body);
     setSelectedReaction(null);
   };
@@ -61,15 +72,24 @@ const MessageDisplay = ({
           showArrow={false}
         />
       )}
+      {/* Popup Diaog modal to remove reaction from a msg when 
+          the reaction owner clicks on reaction in 
+          rightmsddsiplay compoennt   */}
+
       {selectedReaction && (
         <Dialog
-          title="Do you want to remove yout reaction"
+          title="Do you want to remove your reaction"
           firstButtonText="Remove"
           secondButtonText="Cancel"
+          // removes reaction
           firstBtnHandler={() => handleReactionClick(selectedReaction)}
+          //cancel this operation
           secondBtnHandler={() => setSelectedReaction(null)}
         />
       )}
+
+      {/* msg deletion when user clicks on msg in Right/Left component Display  */}
+
       {deleteDialog.open && (
         <Dialog
           title="Delete message"
@@ -79,14 +99,18 @@ const MessageDisplay = ({
               : "DELETE FOR EVERYONE"
           }`}
           secondButtonText="Cancel"
+
           firstBtnHandler={() => {
             const { message, type } = deleteDialog;
+
+            // fn defined in chatWindow called to delete this msg
             deleteChatMessage(
               message.senderId,
               message.receiverId,
               message._id,
               type
             );
+            // close modal /clears
             setDeleteDialog({
               open: false,
               message: null,
@@ -109,6 +133,7 @@ const MessageDisplay = ({
             className="message-chat"
             data-testid="message-chat"
           >
+            {/* separate msgs based on its dates i.e show date when next msg and prev msg not on same day */}
             {index === 0 ||
               (timeAgo.dayMonthYear(chat.createdAt) !==
                 timeAgo.dayMonthYear(chatMessages[index - 1].createdAt) && (
@@ -121,9 +146,11 @@ const MessageDisplay = ({
                   </div>
                 </div>
               ))}
+              {/* show msgs to sender and receiver */}
             {(chat.receiverUsername === profile?.username ||
               chat.senderUsername === profile?.username) && (
               <>
+                {/* show msgs sent by us in rhs view pf msgDisplay   */}
                 {chat.senderUsername === profile?.username && (
                   <RightMessageDisplay
                     chat={chat}
@@ -145,6 +172,7 @@ const MessageDisplay = ({
                     setSelectedReaction={setSelectedReaction}
                   />
                 )}
+                {/* msg sent by others to us show on lhs of msgDisplay */}
                 {chat.receiverUsername === profile?.username && (
                   <LeftMessageDisplay
                     chat={chat}

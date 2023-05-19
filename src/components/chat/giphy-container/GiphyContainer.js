@@ -45,6 +45,7 @@ const GiphyContainer = ({ handleGiphyClick }) => {
               handleGiphyClick(gif.images.original.url);
             }}
           >
+            {/* displays gifs */}
             <img src={`${gif.images.original.url}`} alt="" />
           </li>
         ))}

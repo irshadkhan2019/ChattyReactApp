@@ -51,6 +51,8 @@ export class ImageUtils {
     console.log("type", type, file);
     ImageUtils.checkFile(file, type);
     setSelectedFile(file);
+
+    // update redux post store
     dispatch(
       updatePostItem({
         image: type === "image" ? URL.createObjectURL(file) : "",
@@ -76,6 +78,7 @@ export class ImageUtils {
       reader.addEventListener("error", (event) => {
         reject(event);
       });
+      //reads image as base64 format
       reader.readAsDataURL(file);
     });
     return fileValue;

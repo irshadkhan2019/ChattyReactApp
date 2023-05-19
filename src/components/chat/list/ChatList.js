@@ -24,12 +24,15 @@ import ChatListBody from "./ChatListBody";
 const ChatList = () => {
   const { profile } = useSelector((state) => state.user);
   const { chatList } = useSelector((state) => state.chat);
+
   const [search, setSearch] = useState("");
   const [searchResult, setSearchResult] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [componentType, setComponentType] = useState("chatList");
   let [chatMessageList, setChatMessageList] = useState([]);
+  //users all last msgs with other users having unique conversation id.
+
   const debounceValue = useDebounce(search, 2000);
   const [searchParams] = useSearchParams();
   const [rendered, setRendered] = useState(false);
@@ -37,6 +40,7 @@ const ChatList = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
+  console.log(" chatlist chatMessageList :::",chatMessageList)
   const searchUsers = useCallback(
     async (query) => {
       setIsSearching(true);
@@ -60,8 +64,13 @@ const ChatList = () => {
     [dispatch]
   );
 
+  // adds user to chatlist from search component when clicked on user and selectedUser
+  // and componentType is set from that Search compoennt useeffect runs it.
+  //executed  only when user is selected from search dropdown
   const addSelectedUserToList = useCallback(
     (user) => {
+
+      //create message object with empty msg  body
       const newUser = {
         receiverId: user?._id,
         receiverUsername: user?.username,
@@ -71,25 +80,47 @@ const ChatList = () => {
         senderId: profile?._id,
         senderAvatarColor: profile?.avatarColor,
         senderProfilePicture: profile?.profilePicture,
-        body: "",
+        body: "", //since no msg send yet
       };
+
+      //join room with these users
       ChatUtils.joinRoomEvent(user, profile);
+
       ChatUtils.privateChatMessages = [];
+
+      // we will have id and username as queryparams in url via Search compoentn
+      //as we clicked on a user to call this fn . 
+
+      //check if the user selected already exists in chat msg list
       const findUser = find(
         chatMessageList,
         (chat) =>
           chat.receiverId === searchParams.get("id") ||
           chat.senderId === searchParams.get("id")
       );
+      if (findUser){
+        console.log("selected already exists in chat msg list")
+        console.log(chatMessageList)
+      }
+
+      //no chatUser means chat is happening for 1st time
       if (!findUser) {
+        // add the newUser in chatList since new chat
         const newChatList = [newUser, ...chatMessageList];
         setChatMessageList(newChatList);
+
+        // is chatlist was empty i.e no communication occured with any other user 
         if (!chatList.length) {
+
           dispatch(setSelectedChatUser({ isLoading: false, user: newUser }));
+
+          //set name for receiver 
           const userTwoName =
             newUser?.receiverUsername !== profile?.username
               ? newUser?.receiverUsername
               : newUser?.senderUsername;
+
+          //add the chat user in db
           chatService.addChatUsers({
             userOne: profile?.username,
             userTwo: userTwoName,
@@ -100,23 +131,31 @@ const ChatList = () => {
     [chatList, chatMessageList, dispatch, searchParams, profile]
   );
 
+  //executed  when user is selected from search dropdown and no msg send ,when clicked on x icon
+  //next to the avatar
+
   const removeSelectedUserFromList = (event) => {
+    console.log("removeSelectedUserFromList");
     event.stopPropagation();
     chatMessageList = cloneDeep(chatMessageList);
     const userIndex = findIndex(chatMessageList, [
       "receiverId",
       searchParams.get("id"),
     ]);
+    // user found 
     if (userIndex > -1) {
       chatMessageList.splice(userIndex, 1);
       setSelectedUser(null);
       setChatMessageList(chatMessageList);
+
+      //after removing user form chatlist make 1st chatlist item display
       ChatUtils.updatedSelectedChatUser({
         chatMessageList,
         profile,
         username: searchParams.get("username"),
         setSelectedChatUser,
         params: chatMessageList.length
+           //pass 1st chatmsglist user 
           ? updateQueryParams(chatMessageList[0])
           : null,
         pathname: location.pathname,
@@ -126,16 +165,19 @@ const ChatList = () => {
     }
   };
 
+  //generate query params for user chating
   const updateQueryParams = (user) => {
     setSelectedUser(user);
     const params = ChatUtils.chatUrlParams(user, profile);
     ChatUtils.joinRoomEvent(user, profile);
     ChatUtils.privateChatMessages = [];
     return params;
+    // params->returns eg. { username: "izuku", id: "645f5362752f8c75ddf9a59e" };
   };
 
   // for user already exist in chat list
   const addUsernameToUrlQuery = async (user) => {
+    console.log("for user already exist in chat list addUsernameToUrlQuery",user)
     try {
       const sender = find(
         ChatUtils.chatUsers,
@@ -144,6 +186,9 @@ const ChatList = () => {
           userData.userTwo.toLowerCase() === searchParams.get("username")
       );
       const params = updateQueryParams(user);
+
+      console.log(params);
+
       const userTwoName =
         user?.receiverUsername !== profile?.username
           ? user?.receiverUsername
@@ -153,6 +198,7 @@ const ChatList = () => {
           ? user?.receiverId
           : user?.senderId;
       navigate(`${location.pathname}?${createSearchParams(params)}`);
+
       if (sender) {
         chatService.removeChatUsers(sender);
       }
@@ -160,6 +206,8 @@ const ChatList = () => {
         userOne: profile?.username,
         userTwo: userTwoName,
       });
+
+      //last msg is for us send by others and not read by us 
       if (user?.receiverUsername === profile?.username && !user.isRead) {
         await chatService.markMessagesAsRead(profile?._id, receiverId);
       }
@@ -172,18 +220,23 @@ const ChatList = () => {
     }
   };
 
+  //execute this only when user is selected from search dropdown
   useEffect(() => {
     if (selectedUser && componentType === "searchList") {
       addSelectedUserToList(selectedUser);
     }
   }, [addSelectedUserToList, componentType, selectedUser]);
 
+  // calls api after the mentioned value in the deboince hook sicnce  the dependecy
+  //debounceValue changes after the mentioned time in debounce.
   useEffect(() => {
     if (debounceValue) {
+      console.log("debounceValue ::::",debounceValue)
       searchUsers(debounceValue);
     }
   }, [debounceValue, searchUsers]);
 
+  // update the chatlist
   useEffect(() => {
     setChatMessageList(chatList);
   }, [chatList]);
@@ -229,10 +282,12 @@ const ChatList = () => {
               setSearch(event.target.value);
             }}
           />
+          {/* show cancel icon when having search  */}
           {search && (
             <FaTimes
               className="times"
               onClick={() => {
+                // clear the search and results
                 setIsSearching(false);
                 setSearch("");
                 setSearchResult([]);
@@ -242,7 +297,7 @@ const ChatList = () => {
         </div>
 
         <div className="conversation-container-body">
-          {console.log("chatMessageList", chatMessageList)}
+          {/* show chatlists users to converse with only when user is not searching */}
           {!search && (
             <div className="conversation">
               {chatMessageList.map((data) => (
@@ -281,6 +336,7 @@ const ChatList = () => {
                       }
                     />
                   </div>
+                  
                   <div className="title-text">
                     {data.receiverUsername !== profile?.username
                       ? data?.receiverUsername
@@ -299,11 +355,13 @@ const ChatList = () => {
                       <FaTimes />
                     </div>
                   )}
+
                   {/* <!-- chat list body component --> */}
                   {data?.body &&
                     !data?.deleteForMe &&
                     !data.deleteForEveryone && (
-                      <ChatListBody data={data} profile={profile} />
+                       <ChatListBody data={data} profile={profile} />
+                     
                     )}
                   {data?.deleteForMe && data?.deleteForEveryone && (
                     <div className="conversation-message">

@@ -87,7 +87,8 @@ const Post = ({ post, showIcons }) => {
 
   useEffect(() => {
     getBackgroundImageColor(post);
-  }, [post]);
+    console.log("selectedPostId::::: for comment input display",selectedPostId)
+  }, [post,selectedPostId]);
 
   return (
     <>
@@ -255,7 +256,7 @@ const Post = ({ post, showIcons }) => {
               <PostCommentSection post={post} />
             </div>
           </div>
-          {/* {console.log(selectedPostId)} */}
+          {/* dispay comment input box for a post which is clicked */}
           {selectedPostId === post?._id && <CommentInputBox post={post} />}
         </div>
       </div>

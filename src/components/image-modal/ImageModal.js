@@ -22,6 +22,7 @@ const ImageModal = ({
           className={"image-modal-icon-left"}
           onClick={onClickLeft}
           style={{
+              // if 1st image then dont display left arrow
             pointerEvents: `${lastItemLeft ? "none" : "all"}`,
             color: `${lastItemLeft ? "#bdbdbd" : ""}`,
           }}
@@ -34,11 +35,14 @@ const ImageModal = ({
           <img className="modal-image" alt="" src={`${image}`} />
         </div>
       </div>
+
       {showArrow && (
         <div
           className={"image-modal-icon-right"}
           onClick={onClickRight}
+          
           style={{
+            // if last image then dont display right arrow
             pointerEvents: `${lastItemRight ? "none" : "all"}`,
             color: `${lastItemRight ? "#bdbdbd" : ""}`,
           }}

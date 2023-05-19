@@ -40,6 +40,7 @@ const ResetPassword = () => {
   };
   return (
     <>
+
       <div
         className="container-wrapper"
         style={{ backgroundImage: `url(${backgroundImage})` }}

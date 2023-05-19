@@ -18,6 +18,7 @@ export class PostUtils {
     postData.bgColor = bgColor;
     setTextAreaBackground(bgColor);
     setPostData(postData);
+    console.log(postData);
   }
 
   static postInputEditable(textContent, postData, setPostData) {
@@ -58,6 +59,7 @@ export class PostUtils {
       }
       PostUtils.positionCursor("editable");
     });
+    //clear store
     dispatch(
       updatePostItem({ gifUrl: "", image: "", imgId: "", imgVersion: "" })
     );
@@ -90,6 +92,7 @@ export class PostUtils {
     Utils.dispatchNotification(message, type, dispatch);
   }
 
+  // stores post in db
   static async sendPostWithFileRequest(
     type,
     postData,
@@ -104,6 +107,7 @@ export class PostUtils {
         imageInputRef.current.textContent = postData.post;
       }
       console.log("post data b4 posting", postData);
+      // actual api call to store post
       const response =
         type == "image"
           ? await postService.createPostWithImage(postData)

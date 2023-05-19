@@ -8,9 +8,12 @@ const RightMessageBubble = ({
 }) => {
   return (
     <>
+    {/* display msg if no img and gif */}
       {chat?.body !== "Sent a GIF" && chat?.body !== "Sent an Image" && (
         <div className="message-bubble right-message-bubble">{chat?.body}</div>
       )}
+
+      {/* display img if msg has image */}
       {chat?.selectedImage && (
         <div
           className="message-image"
@@ -23,6 +26,7 @@ const RightMessageBubble = ({
           <img
             src={chat?.selectedImage}
             onClick={() => {
+              //to show image display modal when clicked on image
               setImageUrl(chat?.selectedImage);
               setShowImageModal(!showImageModal);
             }}
@@ -30,6 +34,8 @@ const RightMessageBubble = ({
           />
         </div>
       )}
+
+      {/* if msg has gif  */}
       {chat?.gifUrl && (
         <div className="message-gif">
           <img

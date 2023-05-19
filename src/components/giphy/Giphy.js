@@ -17,7 +17,9 @@ const Giphy = () => {
   const dispatch = useDispatch();
 
   const selectGif = (gif) => {
+    // update redux post store with selected gif url 
     dispatch(updatePostItem({ gifUrl: gif, image: "" }));
+    // update redux modal store to open/close gif modal popup
     dispatch(toggleGifModal(!gifModalIsOpen));
   };
 

@@ -12,11 +12,14 @@ const ModalBoxContent = () => {
   const { privacy } = useSelector((state) => state.post);
   const { feeling } = useSelector((state) => state.modal);
   const privacyRef = useRef(null);
+  // initial default privacy selection
   const [selectedItem, setSelectedItem] = useState({
     topText: "Public",
     subText: "Anyone on SocialApp",
     icon: <FaGlobe className="globe-icon globe" />,
   });
+
+  //to display/hide popup of privacy selection
   const [togglePrivacy, setTogglePrivacy] = useDetectOutsideClick(
     privacyRef,
     false
@@ -49,6 +52,9 @@ const ModalBoxContent = () => {
           <h5 className="inline-title-display" data-testid="box-username">
             {profile?.username}
           </h5>
+          {/* when feeling is selected via ModalBoxSelection->Feeling component this comp is 
+              re-rendered and here feeling is displayed :)
+          */}
           {feeling?.name && (
             <p className="inline-display" data-testid="box-feeling">
               is feeling{" "}
@@ -64,6 +70,7 @@ const ModalBoxContent = () => {
             <div className="selected-item-text" data-testid="box-item-text">
               {selectedItem.topText}
             </div>
+            {/* Dropdown to select public folowers private */}
             <div ref={privacyRef}>
               <SelectDropdown
                 isActive={togglePrivacy}

@@ -12,6 +12,7 @@ import GiphyContainer from "../../giphy-container/GiphyContainer";
 import { ImageUtils } from "./../../../../services/utils/image-utils.service";
 import ImagePreview from "./../../image-preview/ImagePreview";
 
+//loadable loads EmojiPickerComponent only when its clicked
 const EmojiPickerComponent = loadable(() => import("./EmojiPicker"), {
   fallback: <p id="loading">Loading....</p>,
 });
@@ -31,10 +32,13 @@ const MessageInput = ({ setChatMessage }) => {
     event.preventDefault();
     message = message || "Sent an Image";
     setChatMessage(message.replace(/ +(?= )/g, ""), "", base64File);
+    //clear the msg input after sending and saving msg to db 
     setMessage("");
+    // clear/ close base64fileulr,image,emoji gif .
     reset();
   };
 
+  //submits an msg with with image only. 
   const handleImageClick = () => {
     message = message || "Send an Image";
     setChatMessage(message.replace(/ +(?= )/g, ""), "", base64File);
@@ -54,8 +58,10 @@ const MessageInput = ({ setChatMessage }) => {
     ImageUtils.checkFile(file, "image");
     setFile(URL.createObjectURL(file));
     const result = await ImageUtils.readAsBase64(file);
+    console.log("ADD TO PREVIEW ::::",file,URL.createObjectURL(file),result);
     setBase64File(result);
     setShowImagePreview(!showImagePreview);
+    // close other containers 
     setShowEmojiContainer(false);
     setShowGifContainer(false);
   };
@@ -80,7 +86,7 @@ const MessageInput = ({ setChatMessage }) => {
         <EmojiPickerComponent
           onEmojiClick={(event, eventObject) => {
             setMessage((text) => (text += ` ${event.emoji}`));
-            // console.log("Event object", eventObject);
+            console.log("Event object", eventObject);
           }}
           pickerStyle={{ width: "352px", height: "447px" }}
         />
@@ -95,6 +101,7 @@ const MessageInput = ({ setChatMessage }) => {
           <ImagePreview
             image={file}
             onRemoveImage={() => {
+              //clears image and close imagepreviewmodal
               setFile("");
               setBase64File("");
               setShowImagePreview(!showImagePreview);
@@ -106,6 +113,7 @@ const MessageInput = ({ setChatMessage }) => {
             className="chat-list"
             style={{ borderColor: `${hasFocus ? "#50b5ff" : "#f1f0f0"}` }}
           >
+            {/* Image selector  li */}
             <li
               className="chat-list-item"
               onClick={() => {
@@ -121,16 +129,19 @@ const MessageInput = ({ setChatMessage }) => {
                 type="file"
                 className="file-input"
                 placeholder="Select file"
+                // clear previously selected file
                 onClick={() => {
                   if (fileInputRef.current) {
                     fileInputRef.current.value = null;
                   }
                 }}
+                //on selecting new file
                 handleChange={(event) => addToPreview(event.target.files[0])}
               />
 
               <img src={photo} alt="" />
             </li>
+            {/* gify selector */}
             <li
               className="chat-list-item"
               onClick={() => {
@@ -141,6 +152,7 @@ const MessageInput = ({ setChatMessage }) => {
             >
               <img src={gif} alt="" />
             </li>
+            {/* Emoji selector */}
             <li
               className="chat-list-item"
               onClick={() => {
@@ -168,6 +180,7 @@ const MessageInput = ({ setChatMessage }) => {
           />
         </form>
 
+        {/* show button to submit only if image exists and no msg  */}
         {showImagePreview && !message && (
           <Button
             label={<FaPaperPlane />}

@@ -12,7 +12,9 @@ const Feelings = () => {
   const dispatch = useDispatch();
 
   const selectFeeling = (feeling) => {
+    // add feeling to model reducer feeling state var
     dispatch(addPostFeeling({ feeling }));
+    // close the modal 
     dispatch(toggleFeelingModal(!feelingIsOpen));
   };
 

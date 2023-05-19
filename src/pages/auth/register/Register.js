@@ -20,7 +20,6 @@ const Register = () => {
   const [user, setUser] = useState();
   const [setStoredUsername] = useLocalStorage("username", "set");
   const [setLoggedIn] = useLocalStorage("keepLoggedIn", "set");
-
   const [pageReload] = useSessionStorage("pageReload", "set");
   const dispatch = useDispatch();
 

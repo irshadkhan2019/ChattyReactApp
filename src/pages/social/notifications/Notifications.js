@@ -13,6 +13,7 @@ const Notifications = () => {
   const { profile } = useSelector((state) => state.user);
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
+  // popup content when clicked on notification
   const [notificationDialogueContent, setNotificationDialogueContent] =
     useState({
       post: "",
@@ -89,6 +90,7 @@ const Notifications = () => {
 
   return (
     <>
+    {/*Display popup when clicked o notification  */}
       {notificationDialogueContent?.senderName && (
         <NotificationPreview
           title={`Tour Post`}

@@ -128,18 +128,21 @@ const PostForm = () => {
                 />
                 <img src={photo} alt="" /> Photo
               </li>
+              {/* gif */}
               <li
                 className="post-form-list-item"
                 onClick={() => openGifModal()}
               >
                 <img src={gif} alt="" /> Gif
               </li>
+                 {/* feeling */}
               <li
                 className="post-form-list-item"
                 onClick={() => openFeelingsComponent()}
               >
                 <img src={feeling} alt="" /> Feeling
               </li>
+              
               {/* video section */}
               <li
                 className="post-form-list-item image-select"

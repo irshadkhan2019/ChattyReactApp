@@ -17,13 +17,19 @@ const ReactionsAndCommentsDisplay = ({ post }) => {
   const { reactionsModalIsOpen, commentsModalIsOpen } = useSelector(
     (state) => state.modal
   );
+  // reactions obtained from posts reaction field
   const [postReactions, setPostReactions] = useState([]);
+  // formatted reactions obtained by converting posts reaction field data via Utils.formattedReactions 
   const [reactions, setReactions] = useState([]);
+  
   const [postCommentNames, setPostCommentNames] = useState([]);
   const dispatch = useDispatch();
 
-  //get post reaction fro reactions schema
+  //get post reaction from reactions schema -used when mouse hovered
   const getPostReactions = async () => {
+    console.log("getting post reaction for post",post);
+    console.log("formatted reaction for this post",post._id,reactions);
+    console.log("postReactions::::",postReactions);
     try {
       const response = await postService.getPostReactions(post._id);
       setPostReactions(response?.data?.reactions);
@@ -39,7 +45,7 @@ const ReactionsAndCommentsDisplay = ({ post }) => {
   const getPostCommentNames = async () => {
     try {
       const response = await postService.getPostCommentsNames(post._id);
-      console.log(response);
+      console.log("comemnt names",response?.data?.comments);
       setPostCommentNames([...new Set(response?.data?.comments?.names)]);
     } catch (error) {
       Utils.dispatchNotification(
@@ -64,7 +70,10 @@ const ReactionsAndCommentsDisplay = ({ post }) => {
   };
 
   const openReactionsComponent = () => {
+    //update the redux sotre with the post which was clicked
+    console.log("openng likes component");
     dispatch(updatePostItem(post));
+    // open the modal
     dispatch(toggleReactionsModal(!reactionsModalIsOpen));
   };
 
@@ -84,7 +93,9 @@ const ReactionsAndCommentsDisplay = ({ post }) => {
         <div className="reaction">
           <div className="likes-block">
             <div className="likes-block-icons reactions-icon-display">
-              {/* {console.log("postReactions", postReactions)} */}
+              {/* {console.log("postReactions", postReactions)} 
+                  Display all reactions type 
+              */}
               {reactions.length > 0 &&
                 reactions.map((reaction) => (
                   <div className="tooltip-container" key={reaction?.type}>
@@ -95,6 +106,8 @@ const ReactionsAndCommentsDisplay = ({ post }) => {
                       alt=""
                       onMouseEnter={getPostReactions}
                     />
+                    
+                    {/* displays when hovered images */}
                     <div
                       className="tooltip-container-text tooltip-container-bottom"
                       data-testid="reaction-tooltip"
@@ -106,6 +119,7 @@ const ReactionsAndCommentsDisplay = ({ post }) => {
                           alt=""
                         />
                         {reaction?.type.toUpperCase()}
+                        
                       </p>
                       <div className="likes-block-icons-list">
                         {postReactions.length === 0 && (
@@ -113,11 +127,13 @@ const ReactionsAndCommentsDisplay = ({ post }) => {
                         )}
                         {postReactions.length && (
                           <>
+                          {/* Display all users who made reaction in each reaction type since 2 for loop :) */}
                             {postReactions.map((postReaction) => (
                               <div key={Utils.generateString(10)}>
+                                {/* displays username having postReaction type in  same as in outer loop reaction type */}
                                 {postReaction?.type === reaction.type && (
                                   <span key={postReaction?._id}>
-                                    {postReaction?.username}
+                                    {postReaction?.username} 
                                   </span>
                                 )}
                               </div>
@@ -134,13 +150,16 @@ const ReactionsAndCommentsDisplay = ({ post }) => {
                   </div>
                 ))}
             </div>
+
             <span
               data-testid="reactions-count"
               className="tooltip-container reactions-count"
               onMouseEnter={getPostReactions}
               onClick={openReactionsComponent}
             >
-              {sumAllReactions(reactions)}
+              {sumAllReactions(reactions)} 
+
+              {/* showing user names when hovered over the reactions count */}
               <div
                 className="tooltip-container-text tooltip-container-likes-bottom"
                 data-testid="tooltip-container"
@@ -166,30 +185,34 @@ const ReactionsAndCommentsDisplay = ({ post }) => {
             </span>
           </div>
         </div>
+        {/* showing popup modal having lists of users info  who made comments */}
         <div
           className="comment tooltip-container"
           data-testid="comment-container"
           onClick={() => openCommentsComponent()}
         >
+
           {post?.commentsCount > 0 && (
             <span
               data-testid="comment-count"
               onMouseEnter={getPostCommentNames}
             >
-              {Utils.shortenLargeNumbers(post?.commentsCount)}{" "}
+              {Utils.shortenLargeNumbers(post?.commentsCount)}
               {`${post?.commentsCount === 1 ? " Comment" : " Comments"}`}
             </span>
           )}
 
+        {/* tooltip to show comment names when hovered on comment text */}
           <div
             className="tooltip-container-text tooltip-container-comments-bottom"
             data-testid="comment-tooltip"
           >
+
             <div className="likes-block-icons-list">
               {postCommentNames.length === 0 && (
                 <FaSpinner className="circle-notch" />
               )}
-
+            {/* display all post comment names */}
               {postCommentNames.length && (
                 <>
                   {postCommentNames.slice(0, 19).map((names) => (

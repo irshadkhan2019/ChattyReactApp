@@ -11,9 +11,11 @@ import { ImageUtils } from "../../../../services/utils/image-utils.service";
 import PropTypes from "prop-types";
 import { toggleGifModal } from "../../../../redux-toolkit/reducers/modal/modal.reducer";
 
+//setSelectedPostImage ->passed from AddPost and it adds image in  selectedPostImage field.
 const ModalBoxSelection = ({ setSelectedPostImage, setSelectedVideo }) => {
   const { feelingIsOpen, gifModalIsOpen } = useSelector((state) => state.modal);
-  const { post } = useSelector((state) => state.post);
+  const { post } = useSelector((state) => state.post);//post field from post state
+
   const feelingsRef = useRef(null);
   const fileInputRef = useRef(null);
   const videoInputRef = useRef(null);
@@ -34,6 +36,7 @@ const ModalBoxSelection = ({ setSelectedPostImage, setSelectedVideo }) => {
     videoInputRef.current.click();
   };
 
+  //when file is selected or removed
   const handleFileChange = (event) => {
     // console.log(event.target.files[0]);
     ImageUtils.addFileToRedux(
@@ -52,6 +55,7 @@ const ModalBoxSelection = ({ setSelectedPostImage, setSelectedVideo }) => {
 
   return (
     <>
+    {/* display feelings popup to select feeling */}
       {togglefeelings && (
         <div ref={feelingsRef}>
           <Feelings />
@@ -59,6 +63,7 @@ const ModalBoxSelection = ({ setSelectedPostImage, setSelectedVideo }) => {
       )}
       <div className="modal-box-selection" data-testid="modal-box-selection">
         <ul className="post-form-list" data-testid="list-item">
+
           {/* image selection */}
           <li
             className="post-form-list-item image-select"
@@ -80,6 +85,7 @@ const ModalBoxSelection = ({ setSelectedPostImage, setSelectedVideo }) => {
             />
             <img src={photo} alt="" /> Photo
           </li>
+          
           {/* enable giphy modal to select gifs */}
           <li
             className="post-form-list-item"
@@ -87,7 +93,8 @@ const ModalBoxSelection = ({ setSelectedPostImage, setSelectedVideo }) => {
           >
             <img src={gif} alt="" /> Gif
           </li>
-          {/* feelings dropdown secrion */}
+
+          {/* feelings dropdown section */}
           <li
             className="post-form-list-item"
             onClick={() => setToggleFeelings(!togglefeelings)}

@@ -20,6 +20,7 @@ import { postService } from "../../../../services/api/post/post.service";
 import Spinner from "../../../spinner/Spinner";
 import { Utils } from "../../../../services/utils/utils.service";
 
+//selectedImage,selectedPostVideo is coming when user selects from postform component
 const AddPost = ({ selectedImage, selectedPostVideo }) => {
   const { gifModalIsOpen, feeling } = useSelector((state) => state.modal);
   const { gifUrl, image, privacy, video } = useSelector((state) => state.post);
@@ -53,7 +54,7 @@ const AddPost = ({ selectedImage, selectedPostVideo }) => {
   const maxNumberOfCharacters = 100;
 
   const selectBackground = (bgColor) => {
-    console.log(selectedPostImage);
+    console.log(selectedPostImage,bgColor);
     PostUtils.selectBackground(
       bgColor,
       postData,
@@ -62,12 +63,15 @@ const AddPost = ({ selectedImage, selectedPostVideo }) => {
     );
   };
 
+  // change the maxnofofallowed chars for each key press
   const postInputEditable = (event, textContent) => {
     console.log(textContent);
     const currentTextlength = event.target.textContent.length;
     const counter = maxNumberOfCharacters - currentTextlength;
+    //change  {allowedNumberOfCharacters} via counterref
     counterRef.current.textContent = `${counter}/100`;
     setDisable(currentTextlength <= 0 && !postImage && !gifUrl);
+    //whatever typed in input field update it in postData.post field state 
     PostUtils.postInputEditable(textContent, postData, setPostData);
   };
 
@@ -75,6 +79,7 @@ const AddPost = ({ selectedImage, selectedPostVideo }) => {
     PostUtils.closePostModal(dispatch);
   };
 
+  //called for each key pressed  in InputEditable field
   const onKeyDown = (event) => {
     const currentTextlength = event.target.textContent.length;
     if (currentTextlength === maxNumberOfCharacters && event.keyCode !== 8) {
@@ -97,11 +102,15 @@ const AddPost = ({ selectedImage, selectedPostVideo }) => {
     );
   };
 
+  // store the post in db
   const createPost = async () => {
     setLoading(!loading);
     setDisable(!disable);
-
+ 
+    // creating well defined post object using modal and post reducers
     try {
+      // seleced feeling is in Modal reducer state but not in post so we need to 
+      //store it in post reducer
       if (Object.keys(feeling).length) {
         //in modal feeling is object but in post we only need name
         postData.feelings = feeling?.name;
@@ -117,7 +126,7 @@ const AddPost = ({ selectedImage, selectedPostVideo }) => {
         selectedVideo ||
         selectedPostVideo
       ) {
-        //convert to base64 encoded string
+        //convert to base64 encoded string since at backend we store it as base64 form :)
         let result = "";
         if (selectedPostImage) {
           result = await ImageUtils.readAsBase64(selectedPostImage);
@@ -140,6 +149,7 @@ const AddPost = ({ selectedImage, selectedPostVideo }) => {
           postData.video = result;
         }
 
+        // service to store post in db 
         const response = await PostUtils.sendPostWithFileRequest(
           type, //its image/video
           postData,
@@ -190,6 +200,8 @@ const AddPost = ({ selectedImage, selectedPostVideo }) => {
     PostUtils.positionCursor("editable");
   }, []);
 
+  // when user selected gifs via Giphy component it changes post state and adds
+  //gifurl to it when re-renders this useeffect and gif is diplayed in preview image . 
   useEffect(() => {
     // console.log("change in img");
     // console.log("SELECTED POST VIDEO", selectedPostVideo);
@@ -202,14 +214,18 @@ const AddPost = ({ selectedImage, selectedPostVideo }) => {
     } else if (image) {
       setPostImage(image);
       setHasVideo(false);
+      //persist post text after an image/gif is selected
       PostUtils.postInputData(imageInputRef, postData, "", setPostData);
     } else if (video) {
       setHasVideo(true);
       setPostImage(video);
+      //persist post text after an video is selected
       PostUtils.postInputData(imageInputRef, postData, "", setPostData);
     }
   }, [gifUrl, image, video, postData]);
 
+
+  // after saving to fb we need to close all  modals :)
   useEffect(() => {
     if (!loading && apiResponse == "success") {
       dispatch(closeModal());
@@ -259,6 +275,7 @@ const AddPost = ({ selectedImage, selectedPostVideo }) => {
               </button>
             </div>
             <hr />
+            {/* Show user img ,its feelings */}
             <ModalBoxContent />
 
             {/* If user does'nt upload image  */}
@@ -267,6 +284,7 @@ const AddPost = ({ selectedImage, selectedPostVideo }) => {
                 <div
                   className="modal-box-form"
                   data-testid="modal-box-form"
+                  // assign user selected background color 
                   style={{ background: `${textAreaBackground}` }}
                 >
                   <div
@@ -285,13 +303,15 @@ const AddPost = ({ selectedImage, selectedPostVideo }) => {
                         data-placeholder="What's on your mind?...."
                         className={`editable flex-item ${
                           textAreaBackground !== "#ffffff"
-                            ? "textinputColor"
+                            ? "textInputColor"
                             : ""
-                        }`}
+                        } ${postData.post.length === 0 && textAreaBackground !="#ffffff" ? 'defaultInputTextColor':''}`}
+                        // for each input given calculate maxChar 
                         onInput={(e) => {
                           // console.log("on Input", e);
                           postInputEditable(e, e.currentTarget.textContent);
                         }}
+                        // for each key press check if maxchar reached if so block input
                         onKeyDown={onKeyDown}
                         ref={(el) => {
                           // console.log("el", el);
@@ -334,6 +354,7 @@ const AddPost = ({ selectedImage, selectedPostVideo }) => {
                     >
                       <FaTimes />
                     </div>
+                    {/* show the gif/image */}
                     {!hasVideo && (
                       <img
                         data-testid="post-image"
@@ -383,7 +404,7 @@ const AddPost = ({ selectedImage, selectedPostVideo }) => {
               {allowedNumberOfCharacters}
             </span>
 
-            {/* Display gif photo feeling option to select */}
+            {/* Display gif photo feeling option to select like in postform*/}
             <ModalBoxSelection
               setSelectedPostImage={setSelectedPostImage}
               setSelectedVideo={setSelectedVideo}
@@ -405,6 +426,7 @@ const AddPost = ({ selectedImage, selectedPostVideo }) => {
         {gifModalIsOpen && (
           <div className="modal-giphy" data-testid="modal-giphy">
             <div className="modal-giphy-header">
+              {/* Use back btn to close gif modal  */}
               <Button
                 label={<FaArrowLeft />}
                 className="back-button"

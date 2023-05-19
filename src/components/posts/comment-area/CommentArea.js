@@ -21,8 +21,10 @@ const CommentArea = ({ post }) => {
   const { profile } = useSelector((state) => state.user);
   let { reactions } = useSelector((state) => state.userPostReactions);
   const [userSelectedReaction, setUserSelectedReaction] = useState("like");
+
   const selectedPostId = useLocalStorage("selectedpostId", "get");
   const [setSelectedPostId] = useLocalStorage("selectedpostId", "set");
+
   const dispatch = useDispatch();
 
   // const reactions = [];
@@ -53,10 +55,12 @@ const CommentArea = ({ post }) => {
   };
 
   const removeSelectedPostId = () => {
+    // if user clicks on hte same comment component then close it 
     if (selectedPostId === post?._id) {
       setSelectedPostId("");
       dispatch(clearPost());
     } else {
+      //if he clicks diffent component then the last selectedPostId then 
       setSelectedPostId(post?._id);
       dispatch(updatePostItem(post));
     }
@@ -65,11 +69,13 @@ const CommentArea = ({ post }) => {
   const addReactionPost = async (reaction) => {
     console.log("reaction", reaction, "is clicked");
     try {
+      // get already made reaction to this post by this user
       const reactionResponse =
         await postService.getSinglePostReactionByUsername(
           post._id,
           profile.username
         );
+
       //add reaction to post
       post = updatePostReaction(
         reaction,
@@ -86,6 +92,7 @@ const CommentArea = ({ post }) => {
       reactions = [...postReactions];
       dispatch(addReactions(reactions));
 
+      // send reaction as socketio event to server
       sendSocketIOReactions(
         post,
         reaction,
@@ -104,12 +111,14 @@ const CommentArea = ({ post }) => {
           : "",
       };
 
+      // if no prev reaction ,user is adding reaction for 1st time.
       if (!Object.keys(reactionResponse.data.reactions).length) {
         await postService.addReaction(reactionsData);
       } else {
         //if prev reaction exists
         reactionsData.previousReaction = reactionResponse.data.reactions?.type;
         if (reaction == reactionsData.previousReaction) {
+          // if current reaction is same as old reaction then remove his reaction
           await postService.removeReaction(
             post?._id,
             reactionsData.previousReaction,

@@ -48,6 +48,7 @@ const Sidebar = () => {
       setChatPageName("");
     }
 
+    // stop listening to this event to save memory
     socketService?.socket?.off("message received");
     navigate(url);
   };

@@ -15,11 +15,13 @@ const SearchList = ({
 }) => {
   const location = useLocation();
   const navigate = useNavigate();
-  // console.log("INSIDE searchList", result);
+  console.log("INSIDE searchList", result);
 
   const addUsernameToUrlQuery = (user) => {
+    console.log(location.pathname);
     setComponentType("searchList");
     setSelectedUser(user);
+    //generate the tarhet url with whom we want to chat 
     const url = `${location.pathname}?${createSearchParams({
       username: user.username.toLowerCase(),
       id: user._id,
@@ -33,6 +35,7 @@ const SearchList = ({
   return (
     <div className="search-result">
       <div className="search-result-container">
+        {/* show search results dropdown  */}
         {!isSearching && result.length > 0 && (
           <>
             {result.map((user) => (
@@ -40,6 +43,7 @@ const SearchList = ({
                 data-testid="search-result-item"
                 className="search-result-container-item"
                 key={user._id}
+                // when user clicked update url
                 onClick={() => addUsernameToUrlQuery(user)}
               >
                 <Avatar

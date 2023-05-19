@@ -4,6 +4,7 @@ import { reactionsMap } from "../../../../../services/utils/static.data";
 import { Utils } from "../../../../../services/utils/utils.service";
 import "./ReactionList.scss";
 
+//postReactions are filted reactions based on type 
 const ReactionList = ({ postReactions }) => {
   return (
     <div
@@ -31,6 +32,7 @@ const ReactionList = ({ postReactions }) => {
             />
           </div>
           <span>{reaction?.username}</span>
+
         </div>
       ))}
     </div>

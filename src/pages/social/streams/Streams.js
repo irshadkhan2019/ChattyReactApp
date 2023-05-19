@@ -33,8 +33,10 @@ const Streams = () => {
   const PAGE_SIZE = 5;
   useInfiniteScroll(bodyRef, bottomLineRef, fetchPostData);
 
+  // fn called when we reach bottomlineref i.e end of all posts 
   function fetchPostData() {
     let pageNum = currentPage;
+   // console.log("reached bottm getting new posts for page",page);
     if (currentPage <= floor(Math.round(totalPostsCount / PAGE_SIZE))) {
       pageNum += 1;
       setCurrentPage(pageNum);
@@ -57,9 +59,11 @@ const Streams = () => {
     }
   };
 
+  
   const getAllPosts = async (pageNum) => {
     try {
       const response = await postService.getAllPosts(pageNum);
+      console.log("NEW POSTS FETCHED :",response.data.posts)
       // console.log("NEW REQ WAS MADE:", currentPage, pageNum, response);
       if (response?.data?.posts.length > 0) {
         appPosts = [...posts, ...response.data.posts];
@@ -67,6 +71,7 @@ const Streams = () => {
         // console.log(newPosts);
         setPosts(newPosts);
       }
+
       setLoading(false);
     } catch (error) {
       Utils.dispatchNotification(
@@ -92,7 +97,7 @@ const Streams = () => {
 
   useEffectOnce(() => {
     getUserFollowing();
-    dispatch(getPosts());
+    dispatch(getPosts());//extra reducer fn to get post
     dispatch(getUserSuggestions());
     getReactionsByUsername();
     deleteSelectedPostId();
@@ -104,6 +109,7 @@ const Streams = () => {
     setTotalPostsCount(allPosts?.totalPostsCount);
   }, [allPosts]);
 
+  // Listen for socketio events
   useEffect(() => {
     PostUtils.socketIOPost(posts, setPosts);
   }, [posts]);
@@ -131,7 +137,8 @@ const Streams = () => {
             ref={bottomLineRef}
             style={{
               marginBottom: "50px",
-              height: "50px",
+              height: "100px",
+              // backgroundColor: '#222',
             }}
           ></div>
         </div>

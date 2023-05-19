@@ -2,6 +2,8 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import { chatService } from "../../services/api/chat/chat.service";
 import { Utils } from "../../services/utils/utils.service";
 
+// Gives last msg for each conversation id .
+  
 export const getConversationList = createAsyncThunk(
   "chat/getUserChatList",
   async (name, { dispatch }) => {

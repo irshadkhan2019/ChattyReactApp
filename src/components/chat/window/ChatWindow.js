@@ -18,6 +18,7 @@ import MessageInput from "./message-input/MessageInput";
 const ChatWindow = () => {
   const { profile } = useSelector((state) => state.user);
   const { isLoading } = useSelector((state) => state.chat);
+  // reciever user profile 
   const [receiver, setReceiver] = useState();
   const [conversationId, setConversationId] = useState("");
   const [chatMessages, setChatMessages] = useState([]);
@@ -29,9 +30,9 @@ const ChatWindow = () => {
   const getChatMessages = useCallback(
     async (receiverId) => {
       try {
-        //get chat msg
+        //get chat msg specific to a receiverid
         const response = await chatService.getChatMessages(receiverId);
-        console.log("messgaeLIst", response.data.messages);
+        console.log("Chat message for user", profile.user,response.data.messages);
         ChatUtils.privateChatMessages = [...response.data.messages];
         setChatMessages([...ChatUtils.privateChatMessages]);
       } catch (error) {
@@ -58,6 +59,7 @@ const ChatWindow = () => {
       const response = await userService.getUserProfileByUserId(
         searchParams.get("id")
       );
+      console.log("getUserProfileByUserId",response.data);
       setReceiver(response.data.user);
       ChatUtils.joinRoomEvent(response.data.user, profile);
     } catch (error) {
@@ -70,7 +72,7 @@ const ChatWindow = () => {
   }, [dispatch, profile, searchParams]);
 
   const sendChatMessage = async (message, gifUrl, selectedImage) => {
-    // console.log(message, gifUrl, selectedImage);
+   console.log("saving msg to db" ,message, gifUrl, selectedImage);
     try {
       const checkUserOne = some(
         ChatUtils.chatUsers,
@@ -109,6 +111,8 @@ const ChatWindow = () => {
   };
 
   const updateMessageReaction = async (body) => {
+     //based on body reaction type (add,remove) api adds remove reaction from msg
+    console.log("UPDATING MSG REACTION",body);
     try {
       await chatService.updateMessageReaction(body);
     } catch (error) {
@@ -137,6 +141,7 @@ const ChatWindow = () => {
     }
   };
 
+  // set the user messages and receiver user id 
   useEffect(() => {
     if (rendered) {
       getUserProfileByUserId();
@@ -145,22 +150,24 @@ const ChatWindow = () => {
     if (!rendered) setRendered(true);
   }, [getUserProfileByUserId, getNewUserMessages, searchParams, rendered]);
 
+  // listen for msg socket io event,set online users and chatpageusers
   useEffect(() => {
     if (rendered) {
       ChatUtils.socketIOMessageReceived(
         chatMessages,
-        searchParams.get("username"),
+        searchParams.get("username"), //receiver username
         setConversationId,
         setChatMessages
       );
     }
     if (!rendered) setRendered(true);
 
-    ChatUtils.usersOnline(setOnlineUsers());
+    ChatUtils.usersOnline(setOnlineUsers);
     ChatUtils.usersOnChatPage();
   }, [searchParams, rendered]);
 
   useEffect(() => {
+    // listens for eeaction socketio change events,used to update reaction of msg
     ChatUtils.socketIOMessageReaction(
       chatMessages,
       searchParams.get("username"),
@@ -196,7 +203,7 @@ const ChatWindow = () => {
                     : "user-not-online"
                 }`}
               >
-                {receiver?.username}
+              {receiver?.username}
               </div>
 
               {Utils.checkIfUserIsOnline(receiver?.username, onlineUsers) && (

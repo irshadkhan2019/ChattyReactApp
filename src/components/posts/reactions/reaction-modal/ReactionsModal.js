@@ -15,18 +15,24 @@ import { closeModal } from "../../../../redux-toolkit/reducers/modal/modal.reduc
 import "./ReactionsModal.scss";
 
 const ReactionsModal = () => {
+  // get the post from redux which was clicked
   const { _id, reactions } = useSelector((state) => state.post);
+
   const [activeViewAllTab, setActiveViewAllTab] = useState(true);
   const [formattedReactions, setFormattedReactions] = useState([]);
   const [reactionType, setReactionType] = useState("");
   const [reactionColor, setReactionColor] = useState("");
+  // reactions displayed in popup modal based on its type(filtered)
   const [postReactions, setPostReactions] = useState([]);
+
+  // reactions displayed in popup modal based of all type(all reactions)
   const [reactionsOfPost, setReactionsOfPost] = useState([]);
   const dispatch = useDispatch();
 
   const getPostReactions = async () => {
     try {
       const response = await postService.getPostReactions(_id);
+      console.log("REACTIONMODEL posts all reaction",response.data.reactions);
       const orderedPosts = orderBy(
         response?.data?.reactions,
         ["createdAt"],
@@ -48,17 +54,21 @@ const ReactionsModal = () => {
     dispatch(clearPost());
   };
 
+  // when type is view all update postReactions as reactionsOfPost(contains all reactions)
   const viewAll = () => {
     // console.log(reactionsOfPost);
     setActiveViewAllTab(true);
     setReactionType("");
+    // set the posts having filterd posts 
     setPostReactions(reactionsOfPost);
   };
 
   const reactionList = (type) => {
-    // console.log("Filtering type", type);
+    console.log("Filtering type", type);
     setActiveViewAllTab(false);
+    // change reaction type so that tab changes from all to particluar R.type
     setReactionType(type);
+    //filter the reaction having the mentioned type only.
     const exist = some(reactionsOfPost, (reaction) => reaction.type === type);
     const filteredReaction = exist
       ? filter(reactionsOfPost, (reaction) => reaction.type === type)
@@ -67,6 +77,8 @@ const ReactionsModal = () => {
     // console.log(filteredReaction);
     setPostReactions(filteredReaction);
     setReactionColor(reactionsColor[type]);
+    console.log("Filtered reactions of type:",type, filteredReaction);
+
   };
 
   useEffectOnce(() => {
@@ -102,11 +114,13 @@ const ReactionsModal = () => {
               >
                 <img src={`${reactionsMap[reaction?.type]}`} alt="" />
                 <span>{Utils.shortenLargeNumbers(reaction?.value)}</span>
+                
               </li>
             ))}
           </ul>
         </div>
         {/* child 2 */}
+        {/* Displays lists of users who made reactions */}
         <div className="modal-reactions-list">
           <ReactionList postReactions={postReactions} />
         </div>

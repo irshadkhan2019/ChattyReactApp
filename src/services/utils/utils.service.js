@@ -40,6 +40,7 @@ export class Utils {
   //pagereload session fn is used to make user stay a same page after reload instead
   //of going to login page
   static dispatchUser(result, pageReload, dispatch, setUser) {
+    console.log(result)
     pageReload(true);
     dispatch(addUser({ token: result.data.token, profile: result.data.user }));
     setUser(result.data.user);
@@ -108,6 +109,7 @@ export class Utils {
   }
 
   static checkIfUserIsFollowed(userFollowers, postCreatorId, userId) {
+  
     return some(
       userFollowers,
       (user) => user._id === postCreatorId || postCreatorId === userId
@@ -115,7 +117,7 @@ export class Utils {
   }
 
   static checkIfUserIsOnline(username, onlineUsers) {
-    return some(onlineUsers, (user) => user === username?.toLowercase());
+    return some(onlineUsers, (user) => user.toLowerCase() === username?.toLowerCase());
   }
 
   static firstLetterUpperCase(word) {
