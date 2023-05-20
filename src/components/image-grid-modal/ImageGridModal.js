@@ -17,6 +17,7 @@ const ImageGridModal = ({ images, closeModal, selectedImage }) => {
             alt=""
             src={`${Utils.getPostImage(data?.imgId, data?.imgVersion)}`}
             onClick={() => {
+              // since img is selecetd from gallery images we have its id and version,so pass as event var
               selectedImage(Utils.getPostImage(data?.imgId, data?.imgVersion));
               closeModal();
             }}

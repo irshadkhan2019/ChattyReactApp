@@ -19,6 +19,7 @@ import { toggleDeleteDialog } from "../../../redux-toolkit/reducers/modal/modal.
 import ImageModal from "./../../../components/image-modal/ImageModal";
 import { filter } from "lodash";
 import Dialog from "./../../../components/dialog/Dialog";
+import { ImageUtils } from "../../../services/utils/image-utils.service";
 
 const Profile = () => {
   const { profile } = useSelector((state) => state.user);
@@ -27,12 +28,15 @@ const Profile = () => {
   const [rendered, setRendered] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [hasImage, setHasImage] = useState(false);
+
   const [selectedBackgroundImage, setSelectedBackgroundImage] = useState("");
   const [selectedProfileImage, setSelectedProfileImage] = useState("");
   const [bgUrl, setBgUrl] = useState("");
   const [galleryImages, setGalleryImages] = useState([]);
   const [imageUrl, setImageUrl] = useState("");
+  // for tabs
   const [displayContent, setDisplayContent] = useState("timeline");
+
   const [loading, setLoading] = useState(true);
   const [showImageModal, setShowImageModal] = useState(false);
   const [userProfileData, setUserProfileData] = useState(null);
@@ -40,12 +44,17 @@ const Profile = () => {
   const { username } = useParams();
   const [searchParams] = useSearchParams();
 
+  // used to change tabitems
   const changeTabContent = (data) => {
     setDisplayContent(data);
   };
 
+  // when users selects profile or background image to upload
   const selectedFileImage = (data, type) => {
+    //set hasImage which enables Background header compoennt to display this image as preview and 
+    //aslo prove cancel button to remove it or save btn to save to db as new bg image. 
     setHasImage(!hasImage);
+    console.log("A file selected to preview",data,type);
     if (type === "background") {
       setSelectedBackgroundImage(data);
     } else {
@@ -53,6 +62,7 @@ const Profile = () => {
     }
   };
 
+  // after selecting profile or background image if users choose to cancel the changes . 
   const cancelFileSelection = () => {
     setHasImage(!hasImage);
     setSelectedBackgroundImage("");
@@ -61,6 +71,7 @@ const Profile = () => {
   };
 
   const getUserProfileByUsername = useCallback(async () => {
+    console.log("useParams():",username);
     try {
       const response = await userService.getUserProfileByUsername(
         username,
@@ -69,6 +80,7 @@ const Profile = () => {
       );
       setUser(response.data.user);
       setUserProfileData(response.data);
+      // set the user's uploaded bg image to display in page 
       setBgUrl(
         Utils.getPostImage(
           response?.data?.user.bgImageId,
@@ -85,33 +97,55 @@ const Profile = () => {
     }
   }, [dispatch, searchParams, username]);
 
-  const saveImage = (type) => {
-    const reader = new FileReader();
-    reader.addEventListener(
-      "load",
-      async () => addImage(reader.result, type),
-      false
-    );
+  // used to save the passed img file
+  const saveImage = async (type) => {
+    console.log("selectedProfileImg",selectedProfileImage);
+    console.log("selectedBackgroundImage",selectedBackgroundImage);
 
-    if (
-      selectedBackgroundImage &&
-      typeof selectedBackgroundImage !== "string"
-    ) {
-      reader.readAsDataURL(Utils.renameFile(selectedBackgroundImage));
-    } else if (
-      selectedProfileImage &&
-      typeof selectedProfileImage !== "string"
-    ) {
-      reader.readAsDataURL(Utils.renameFile(selectedProfileImage));
-    } else {
-      addImage(selectedBackgroundImage, type);
+    // const reader = new FileReader();
+    // // after reader loads file it called addImage to save the loaded file to db . 
+    // reader.addEventListener(
+    //   "load",
+    //   async () => addImage(reader.result, type),
+    //   false
+    // );
+    
+    // // if user select bg image from galleryImages instead of new img file . 
+    // if (
+    //   selectedBackgroundImage &&
+    //   typeof selectedBackgroundImage !== "string"
+    // ) {
+    //   reader.readAsDataURL(Utils.renameFile(selectedBackgroundImage));
+    // } else if (
+    //   selectedProfileImage &&
+    //   typeof selectedProfileImage !== "string"
+    // ) {
+    //   reader.readAsDataURL(Utils.renameFile(selectedProfileImage));
+    // } else {
+    //   addImage(selectedBackgroundImage, type);
+    // }
+
+    let result="";
+
+    if(selectedProfileImage){
+       result = await ImageUtils.readAsBase64(selectedProfileImage);
+    }else if(selectedBackgroundImage){
+         result = await ImageUtils.readAsBase64(selectedBackgroundImage);
+
     }
+    addImage(result, type);
   };
 
+  
+  // save bg image or profile img to db
   const addImage = async (result, type) => {
+
+    // according to type (profile or bg) preset url
+    console.log("Finally saving file of type",type,"ACTUAL FILE::",result);
     try {
       const url =
         type === "background" ? "/images/background" : "/images/profile";
+        //save image to db
       const response = await imageService.addImage(url, result);
       if (response) {
         Utils.dispatchNotification(response.data.message, "success", dispatch);
@@ -128,6 +162,7 @@ const Profile = () => {
     }
   };
 
+  // when clicked cancel remove bg image  from db
   const removeBackgroundImage = async (bgImageId) => {
     try {
       setBgUrl("");
@@ -142,6 +177,7 @@ const Profile = () => {
     }
   };
 
+  // removes users bg image from db
   const removeImage = async (url) => {
     const response = await imageService.removeImage(url);
     Utils.dispatchNotification(response.data.message, "success", dispatch);
@@ -163,11 +199,13 @@ const Profile = () => {
     }
   };
 
+  // get previous all images set up by user
   const getUserImages = useCallback(async () => {
     try {
       const imagesResponse = await imageService.getUserImages(
         searchParams.get("id")
       );
+      //set the gallery wiht users old images
       setGalleryImages(imagesResponse.data.images);
     } catch (error) {
       Utils.dispatchNotification(
@@ -188,7 +226,8 @@ const Profile = () => {
 
   return (
     <>
-      {console.log("Uswrprofiledara", userProfileData)}
+      {console.log("User PROFILE DATA:", userProfileData)}
+
       {showImageModal && (
         <ImageModal
           image={`${imageUrl}`}
@@ -210,6 +249,8 @@ const Profile = () => {
       )}
       <div className="profile-wrapper">
         <div className="profile-wrapper-container">
+          {/* background header component section */}
+
           <div className="profile-header">
             <BackgroundHeader
               user={user}
@@ -217,17 +258,18 @@ const Profile = () => {
               hasImage={hasImage}
               hasError={hasError}
               url={bgUrl}
-              onClick={changeTabContent}
-              selectedFileImage={selectedFileImage}
+              onClick={changeTabContent} //used to change tab items
+              selectedFileImage={selectedFileImage} //bg or profile image when selecetd
               saveImage={saveImage}
               cancelFileSelection={cancelFileSelection}
               removeBackgroundImage={removeBackgroundImage}
+              // password and notification shown only when viewing logged in users profile. 
               tabItems={tabItems(
                 username === profile?.username,
                 username === profile?.username
               )}
-              tab={displayContent}
-              hideSettings={username === profile?.username}
+              tab={displayContent}//current tab content displayed in screen
+              hideSettings={username === profile?.username} //show setting only for loggedin usr profiles.
               galleryImages={galleryImages}
             />
           </div>
