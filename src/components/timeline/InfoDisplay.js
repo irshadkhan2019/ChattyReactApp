@@ -28,11 +28,16 @@ const InfoDisplay = ({
   setEditableSocialInputs,
   updateInfo,
 }) => {
+  // toggle edit fn
   const [editIntroBtn, setEditIntroBtn] = useState(true);
+  // can have data or empty based on db stored vaue
   const { quote, work, school, location } = editableInputs;
+  const { instagram, twitter, facebook, youtube } = editableSocialInputs;
+
+  // text to show if empty editablefields
   const { quoteMsg, workMsg, schoolMsg, locationMsg } = noBasicInfo;
   const { instagramMsg, twitterMsg, facebookMsg, youtubeMsg } = noSocialInfo;
-  const { instagram, twitter, facebook, youtube } = editableSocialInputs;
+
   const {
     quotePlacehoder,
     workPlacehoder,
@@ -54,22 +59,29 @@ const InfoDisplay = ({
         <div className="side-container" data-testid="side-container">
           <div className="side-container-header">
             <p>{title}</p>
+            {/* if user viewing its own profile */}
             {isCurrentUser && (
               <p
                 className="editBtn"
                 data-testid="editBtn"
+                // toggle edit functionality
                 onClick={() => setEditIntroBtn(!editIntroBtn)}
               >
-                Edit
+                Edit 
               </p>
             )}
           </div>
+            
+          {/* If compoent is Basic info but not social   */}
           {type === "basic" && (
             <div className="side-container-body">
+              {/* Show /Edit Quote field */}
               <div className="side-container-body-about" data-testid="quote">
+                {/* it edit btn clicked  */}
                 {editIntroBtn && !quote && (
                   <div className="no-information">{quoteMsg}</div>
                 )}
+                {/* react ContentEditable field to show content or edit ,similar to posts editable-field  */}
                 <ContentEditable
                   data-testid="quote-editable"
                   data-placeholder={quotePlacehoder}
@@ -82,9 +94,11 @@ const InfoDisplay = ({
                     overflowY: "auto",
                     width: "250px",
                   }}
+                  // when user types change the editableinputs field 
                   onChange={(event) => {
                     setEditableInputs({
                       ...editableInputs,
+                      // replaces quotes field only
                       quote: event.target.value,
                     });
                   }}
@@ -92,7 +106,9 @@ const InfoDisplay = ({
               </div>
             </div>
           )}
+          {/* show/edit Remaining field  */}
           <div className="side-container-body">
+            {/* show/edit work or instagram field based on type passed    */}
             <div className="side-container-body-icon">
               {type === "basic" ? (
                 <FaBriefcase className="icon" />
@@ -104,10 +120,12 @@ const InfoDisplay = ({
               className="side-container-body-content"
               data-testid="content-1"
             >
+              {/* show field instagram of work based on type */}
               {type === "basic" && editIntroBtn && work && <>Works at </>}
               {type === "basic" && editIntroBtn && !work && (
                 <div className="no-information">{workMsg}</div>
               )}
+
               {type !== "basic" && editIntroBtn && instagram && (
                 <a
                   className="link"
@@ -121,6 +139,7 @@ const InfoDisplay = ({
               {type !== "basic" && editIntroBtn && !instagram && (
                 <div className="no-information">{instagramMsg}</div>
               )}
+              {/* edit field work or instagram based on type  */}
               <ContentEditable
                 data-testid="content-1-editable"
                 data-placeholder={
@@ -147,6 +166,7 @@ const InfoDisplay = ({
             </div>
           </div>
 
+    {/* show/edit school or twitter field based on type passed    */}
           <div className="side-container-body">
             <div className="side-container-body-icon">
               {type === "basic" ? (
@@ -202,6 +222,7 @@ const InfoDisplay = ({
             </div>
           </div>
 
+    {/* show/edit cityname or facebook link field based on type passed    */}
           <div className="side-container-body">
             <div className="side-container-body-icon">
               {type === "basic" ? (
@@ -257,6 +278,7 @@ const InfoDisplay = ({
             </div>
           </div>
 
+    {/* show/edit Youtube field based on type passed    */}
           {type !== "basic" && (
             <div className="side-container-body">
               <div className="side-container-body-icon">
@@ -299,6 +321,7 @@ const InfoDisplay = ({
             </div>
           )}
 
+        {/* if user viewing its own profile provide btn to save changes to db  */}
           {isCurrentUser && (
             <div className="intro-submit-button">
               <Button

@@ -183,11 +183,15 @@ const Profile = () => {
     Utils.dispatchNotification(response.data.message, "success", dispatch);
   };
 
+
+  // used to delete image when clicked on trash icon and modal pops up .
   const removeImageFromGallery = async (imageId) => {
     try {
+      // close dialog 
       dispatch(toggleDeleteDialog({ toggle: false, data: null }));
       const images = filter(galleryImages, (image) => image._id !== imageId);
       setGalleryImages(images);
+    
       await removeImage(`/images/${imageId}`);
     } catch (error) {
       setHasError(true);
@@ -273,10 +277,13 @@ const Profile = () => {
               galleryImages={galleryImages}
             />
           </div>
+
+          {/* Based on displayCOntent tabs show other stabs componentns */}
           <div className="profile-content">
             {displayContent === "timeline" && (
               <Timeline userProfileData={userProfileData} loading={loading} />
             )}
+            
             {displayContent === "followers" && <FollowerCard userData={user} />}
             {displayContent === "gallery" && (
               <>

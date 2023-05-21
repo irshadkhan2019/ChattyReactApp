@@ -55,6 +55,7 @@ const Timeline = ({ userProfileData, loading }) => {
     }
   };
 
+  // set user basic and social info
   const getUserByUsername = useCallback(() => {
     console.log("USER PROFILE_DATA", userProfileData);
     if (userProfileData) {
@@ -69,6 +70,7 @@ const Timeline = ({ userProfileData, loading }) => {
       setEditableSocialInputs(userProfileData.user?.social);
     }
   }, [userProfileData]);
+
 
   const getReactionsByUsername = async () => {
     try {
@@ -95,8 +97,15 @@ const Timeline = ({ userProfileData, loading }) => {
   }, [posts]);
 
   useEffect(() => {
+    // stores users info from db in states 
     getUserByUsername();
   }, [getUserByUsername]);
+
+  // Just for testing to see changes in fields  for each keystroke from InfoDisplay compoennts 
+  // useEffect(()=>{
+  //   console.log("editableInputs",editableInputs);
+  //   console.log("editableSocialInputs",editableSocialInputs)
+  // },[editableInputs,editableSocialInputs])
 
   return (
     <div className="timeline-wrapper" data-testid="timeline">
@@ -109,6 +118,8 @@ const Timeline = ({ userProfileData, loading }) => {
               loading={loading}
             />
           </div>
+
+          {/*Show/Edit basic info  */}
           <div className="side-content">
             <BasicInfo
               setEditableInputs={setEditableInputs}
@@ -116,8 +127,10 @@ const Timeline = ({ userProfileData, loading }) => {
               username={username}
               profile={profile}
               loading={loading}
-            />
+            /> 
           </div>
+
+          {/*Show/Edit SocialLinks info  */}
           <div className="side-content social">
             <SocialLinks
               setEditableSocialInputs={setEditableSocialInputs}
@@ -128,6 +141,7 @@ const Timeline = ({ userProfileData, loading }) => {
             />
           </div>
         </div>
+        {/* posts skeleton if loading  */}
         {loading && !posts.length && (
           <div className="timeline-wrapper-container-main">
             <div style={{ marginBottom: "10px" }}>
@@ -142,9 +156,12 @@ const Timeline = ({ userProfileData, loading }) => {
             </>
           </div>
         )}
+        {/* display postforms and post */}
         {!loading && posts.length > 0 && (
           <div className="timeline-wrapper-container-main">
+            {/* if user viewing its own profile show postform */}
             {username === profile?.username && <PostForm />}
+            {/* show all his posts */}
             {posts.map((post) => (
               <div key={post?._id}>
                 {(!Utils.checkIfUserIsBlocked(

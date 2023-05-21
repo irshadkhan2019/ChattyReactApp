@@ -13,6 +13,7 @@ const BasicInfo = ({
   setEditableInputs,
 }) => {
   const dispatch = useDispatch();
+
   const noBasicInfo = {
     quoteMsg: "No information",
     workMsg: "No information",
@@ -44,9 +45,12 @@ const BasicInfo = ({
     youtubePlacehoder: "",
   };
 
+  // change users basic info in db
   const updateBasicInfo = async () => {
     try {
+      // editable inputs changes in InfoDisplay compoentns when users edits a field 
       const response = await userService.updateBasicInfo(editableInputs);
+
       Utils.dispatchNotification(response.data.message, "success", dispatch);
     } catch (error) {
       Utils.dispatchNotification(
@@ -63,9 +67,9 @@ const BasicInfo = ({
         <BasicInfoSkeleton />
       ) : (
         <InfoDisplay
-          title="Basic Info"
+          title="Basic Info "
           type="basic"
-          isCurrentUser={username === profile?.username}
+          isCurrentUser={username === profile?.username} //show edi field to only users viewing its own profile
           noBasicInfo={noBasicInfo}
           noSocialInfo={noSocialInfo}
           basicInfoPlaceholder={basicInfoPlaceholder}
