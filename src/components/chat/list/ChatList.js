@@ -255,8 +255,8 @@ const ChatList = () => {
             {/*Buttons realted to room  */}
         <div className="conversation-container-room">
           <CreateRoomButton></CreateRoomButton>
-          <CreateRoomButton></CreateRoomButton>
         </div>
+        
         <div className="conversation-container-header">
           <div className="header-img">
             <Avatar

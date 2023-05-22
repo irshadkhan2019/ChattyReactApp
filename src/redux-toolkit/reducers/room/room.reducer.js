@@ -16,8 +16,12 @@ const roomSlice = createSlice({
   name: "room",
   initialState,
   reducers: {
-    openRoom: (state, action) => {
+    setOpenRoom: (state, action) => {
+      const { isUserInRoom, isUserRoomCreator } = action.payload;
+      state.isUserInRoom=isUserInRoom
+      state.isUserRoomCreator=isUserRoomCreator
     },
+    
     setRoomDetails: (state, action) => {
     },
     setActiveRooms: (state, action) => {
@@ -34,5 +38,5 @@ const roomSlice = createSlice({
   },
 });
 
-export const { openRoom, setRoomDetails, setActiveRooms,setLocalStream,setRemoteStreams,setAudioOnly,setScreenShareStream } = roomSlice.actions;
+export const { setOpenRoom, setRoomDetails, setActiveRooms,setLocalStream,setRemoteStreams,setAudioOnly,setScreenShareStream } = roomSlice.actions;
 export default roomSlice.reducer;
