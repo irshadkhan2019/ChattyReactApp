@@ -7,6 +7,7 @@ import postReducer from "./reducers/post/post.reducer";
 import postsReducer from "./reducers/post/posts.reducer";
 import userPostReactionReducer from "./reducers/post/user-post-reaction.reducer";
 import chatReducer from "./reducers/chat/chat.reducer";
+import roomReducer from "./reducers/room/room.reducer";
 
 export const store = configureStore({
   reducer: {
@@ -18,5 +19,6 @@ export const store = configureStore({
     allPosts: postsReducer,
     userPostReactions: userPostReactionReducer,
     chat: chatReducer,
+    room: roomReducer,
   },
 });
