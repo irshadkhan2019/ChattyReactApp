@@ -6,10 +6,12 @@ import { useEffect } from "react";
 import { socketService } from "./services/sockets/socket.service";
 import Toast from "./components/toast/Toast";
 import { useSelector } from "react-redux";
+import Room from "./components/room/Room";
 
 const App = () => {
   //get notification from redux store:)
   const { notifications } = useSelector((state) => state);
+  const { isUserInRoom } = useSelector((state) => state.room);
 
   useEffect(() => {
     socketService.setupSocketConnection();
@@ -24,6 +26,8 @@ const App = () => {
           autoDelete={false}
         />
       )}
+      {/* room  */}
+      {isUserInRoom && <Room />}
       <BrowserRouter>
         <AppRouter />
       </BrowserRouter>
