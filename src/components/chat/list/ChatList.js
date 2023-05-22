@@ -20,6 +20,7 @@ import {
 import { cloneDeep, find, findIndex } from "lodash";
 import { timeAgo } from "../../../services/utils/timeago.utils";
 import ChatListBody from "./ChatListBody";
+import CreateRoomButton from './../../button/CreateRoomButton';
 
 const ChatList = () => {
   const { profile } = useSelector((state) => state.user);
@@ -251,6 +252,11 @@ const ChatList = () => {
   return (
     <div data-testid="chatList">
       <div className="conversation-container">
+            {/*Buttons realted to room  */}
+        <div className="conversation-container-room">
+          <CreateRoomButton></CreateRoomButton>
+          <CreateRoomButton></CreateRoomButton>
+        </div>
         <div className="conversation-container-header">
           <div className="header-img">
             <Avatar
@@ -262,7 +268,9 @@ const ChatList = () => {
             />
           </div>
           <div className="title-text">{profile?.username}</div>
+          
         </div>
+   
 
         <div
           className="conversation-container-search"
@@ -385,7 +393,6 @@ const ChatList = () => {
               ))}
             </div>
           )}
-
           {/* <!-- search component --> */}
           <SearchList
             searchTerm={search}
@@ -399,6 +406,8 @@ const ChatList = () => {
           />
         </div>
       </div>
+  
+                     
     </div>
   );
 };
