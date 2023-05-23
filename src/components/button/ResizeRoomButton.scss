@@ -1,0 +1,16 @@
+.main-container {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+}
+
+.resize {
+  width: 36px;
+  height: 36px;
+  border: 2px solid #5865f2;
+  border-radius: 8px;
+  margin-top: 10px;
+  color: var(--white-1);
+  background-color: #5865f2;
+  cursor: pointer;
+}

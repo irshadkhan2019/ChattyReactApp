@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
 import "./Room.scss";
+import ResizeRoomButton from "./../button/ResizeRoomButton";
 
 const Room = (props) => {
   const [isRoomMinimized, setIsRoomMinimized] = useState(true);
@@ -15,7 +16,10 @@ const Room = (props) => {
         isRoomMinimized ? "minimized-screen" : "full-screen"
       }`}
     >
-      Room
+      <ResizeRoomButton
+        isRoomMinimized={isRoomMinimized}
+        handleRoomResize={roomResizeHandler}
+      />
     </div>
   );
 };
