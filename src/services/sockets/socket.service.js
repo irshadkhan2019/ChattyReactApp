@@ -3,6 +3,7 @@ import { io } from "socket.io-client";
 class SocketService {
   socket;
   setupSocketConnection() {
+    // connect to node js app
     this.socket = io(process.env.REACT_APP_BASE_ENDPOINT, {
       transports: ["websocket"],
       secure: true,
@@ -22,6 +23,14 @@ class SocketService {
       console.log("Error", error);
       this.socket.connect();
     });
+    //listen for room events
+    this.socket.on("room-create", (room_details) => {
+      console.log("New room created", room_details);
+    });
   }
+  // create a room and emit event to server
+  createNewRoom = (user) => {
+    this.socket.emit("room-create", user);
+  };
 }
 export const socketService = new SocketService();
