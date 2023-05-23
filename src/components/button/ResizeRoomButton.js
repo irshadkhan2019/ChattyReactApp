@@ -8,7 +8,13 @@ const ResizeRoomButton = ({ isRoomMinimized, handleRoomResize }) => {
   return (
     <div className="main-container">
       <Button
-        label={isRoomMinimized ? <TbArrowsMaximize /> : <TbArrowsMinimize />}
+        label={
+          isRoomMinimized ? (
+            <TbArrowsMaximize size={24} />
+          ) : (
+            <TbArrowsMinimize size={24} />
+          )
+        }
         handleClick={handleRoomResize}
         className={"resize"}
       />
