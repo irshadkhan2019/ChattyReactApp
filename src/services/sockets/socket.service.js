@@ -39,6 +39,11 @@ class SocketService {
     this.socket.emit("room-create", user);
   };
 
+  // prefetch rooms for page reload case
+  getActiveRooms = () => {
+    this.socket.emit("get-active-room");
+  };
+
   // To Join a room,emit event to server
   joinRoom = (user, roomId) => {
     this.socket.emit("room-join", { user, roomId });
