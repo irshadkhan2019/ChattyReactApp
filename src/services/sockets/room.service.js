@@ -16,3 +16,8 @@ export const newRoomCreated = (data) => {
   console.log("New room created", roomDetails);
   store.dispatch(setRoomDetails(roomDetails));
 };
+export const updateActiveRooms = (data) => {
+  const { activeRooms } = data;
+  console.log("Total active rooms ", activeRooms);
+  //store.dispatch(setRoomDetails(roomDetails));
+};

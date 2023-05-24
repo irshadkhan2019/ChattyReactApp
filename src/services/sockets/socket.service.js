@@ -1,5 +1,5 @@
 import { io } from "socket.io-client";
-import { newRoomCreated } from "./room.service";
+import { newRoomCreated, updateActiveRooms } from "./room.service";
 
 class SocketService {
   socket;
@@ -24,9 +24,14 @@ class SocketService {
       console.log("Error", error);
       this.socket.connect();
     });
-    //listen for room events
+    //listen for new room events created by us
     this.socket.on("room-create", (roomDetails) => {
       newRoomCreated({ roomDetails });
+    });
+
+    // listen for all active rooms
+    this.socket.on("active-rooms", (activeRooms) => {
+      updateActiveRooms({ activeRooms });
     });
   }
   // create a room and emit event to server
