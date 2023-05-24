@@ -7,6 +7,7 @@ import { Utils } from "../../../services/utils/utils.service";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import "./ActiveRoomButton.scss";
+import { joinRoom } from "../../../services/sockets/room.service";
 
 const ActiveRoomButton = (props) => {
   const { roomId, creatorUsername, amountOfParticipants, isUserInRoom } = props;
@@ -24,7 +25,8 @@ const ActiveRoomButton = (props) => {
 
   const handleJoinActiveRoom = () => {
     if (amountOfParticipants < 4) {
-      console.log("Joining room ");
+      console.log("Joining room", roomId);
+      joinRoom(roomId);
     }
   };
 

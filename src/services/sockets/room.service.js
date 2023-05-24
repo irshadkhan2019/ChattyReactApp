@@ -39,3 +39,9 @@ export const updateActiveRooms = async (data) => {
   console.log("ROOMS::", rooms);
   store.dispatch(setActiveRooms(rooms));
 };
+
+export const joinRoom = (roomId) => {
+  store.dispatch(setRoomDetails({ roomId }));
+  store.dispatch(setOpenRoom({ isUserInRoom: true, isUserRoomCreator: false }));
+  socketService.joinRoom(store.getState().user, roomId);
+};

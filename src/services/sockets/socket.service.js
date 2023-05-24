@@ -38,5 +38,10 @@ class SocketService {
   createNewRoom = (user) => {
     this.socket.emit("room-create", user);
   };
+
+  // To Join a room,emit event to server
+  joinRoom = (user, roomId) => {
+    this.socket.emit("room-join", { user, roomId });
+  };
 }
 export const socketService = new SocketService();
