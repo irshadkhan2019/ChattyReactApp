@@ -27,7 +27,10 @@ const roomSlice = createSlice({
       state.roomDetails = roomDetails;
     },
 
-    setActiveRooms: (state, action) => {},
+    setActiveRooms: (state, action) => {
+      state.activeRooms = action.payload;
+    },
+
     setLocalStream: (state, action) => {},
     setRemoteStreams: (state, action) => {},
     setAudioOnly: (state, action) => {},

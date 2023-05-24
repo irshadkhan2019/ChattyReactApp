@@ -31,7 +31,7 @@ class SocketService {
 
     // listen for all active rooms
     this.socket.on("active-rooms", (activeRooms) => {
-      updateActiveRooms({ activeRooms });
+      updateActiveRooms(activeRooms);
     });
   }
   // create a room and emit event to server
