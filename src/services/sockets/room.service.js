@@ -40,8 +40,19 @@ export const updateActiveRooms = async (data) => {
   store.dispatch(setActiveRooms(rooms));
 };
 
-export const joinRoom = (roomId) => {
-  store.dispatch(setRoomDetails({ roomId }));
+export const joinRoom = (room) => {
+  store.dispatch(setRoomDetails({ roomDetails: room }));
   store.dispatch(setOpenRoom({ isUserInRoom: true, isUserRoomCreator: false }));
-  socketService.joinRoom(store.getState().user, roomId);
+  socketService.joinRoom(store.getState().user, room.roomId);
+};
+
+export const leaveRoom = () => {
+  socketService.leaveRoom(
+    store.getState().user,
+    store.getState().room.roomDetails.roomId
+  );
+  store.dispatch(setRoomDetails({ roomDetails: null }));
+  store.dispatch(
+    setOpenRoom({ isUserInRoom: false, isUserRoomCreator: false })
+  );
 };

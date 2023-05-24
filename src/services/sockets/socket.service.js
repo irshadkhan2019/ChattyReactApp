@@ -43,5 +43,10 @@ class SocketService {
   joinRoom = (user, roomId) => {
     this.socket.emit("room-join", { user, roomId });
   };
+  // To leave a room,emit event to server
+  leaveRoom = (user, roomId) => {
+    console.log("leaving room", user.profile._id, roomId);
+    this.socket.emit("room-leave", { user, roomId });
+  };
 }
 export const socketService = new SocketService();

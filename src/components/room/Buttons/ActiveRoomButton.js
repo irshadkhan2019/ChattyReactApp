@@ -10,7 +10,8 @@ import "./ActiveRoomButton.scss";
 import { joinRoom } from "../../../services/sockets/room.service";
 
 const ActiveRoomButton = (props) => {
-  const { roomId, creatorUsername, amountOfParticipants, isUserInRoom } = props;
+  const { roomId, creatorUsername, amountOfParticipants, isUserInRoom, room } =
+    props;
   const [roomOwner, setRoomOwner] = useState();
   const dispatch = useDispatch();
   const activeRoomButtonDisabled = amountOfParticipants > 3;
@@ -25,8 +26,8 @@ const ActiveRoomButton = (props) => {
 
   const handleJoinActiveRoom = () => {
     if (amountOfParticipants < 4) {
-      console.log("Joining room", roomId);
-      joinRoom(roomId);
+      console.log("Joining room", { room });
+      joinRoom(room);
     }
   };
 

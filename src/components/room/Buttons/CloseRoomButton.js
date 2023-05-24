@@ -1,10 +1,12 @@
 import React from "react";
 import Button from "../../button/Button";
 import { MdClose } from "react-icons/md";
+import { leaveRoom } from "../../../services/sockets/room.service";
+import { useSelector } from "react-redux";
 
 const CloseRoomButton = () => {
   const handleLeaveRoom = () => {
-    console.log("left");
+    leaveRoom();
   };
 
   return (

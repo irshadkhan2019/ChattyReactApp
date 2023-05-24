@@ -269,6 +269,7 @@ const ChatList = () => {
               creatorUsername={room.creatorUsername}
               amountOfParticipants={room.participants.length}
               isUserInRoom={isUserInRoom}
+              room={room}
             />
           ))}
         </div>
