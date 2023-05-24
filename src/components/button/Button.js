@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 
 const Button = (props) => {
-  const { label, className, disabled, handleClick } = props;
+  const { label, className, disabled, handleClick, style } = props;
 
   return (
     <>

@@ -20,11 +20,13 @@ import {
 import { cloneDeep, find, findIndex } from "lodash";
 import { timeAgo } from "../../../services/utils/timeago.utils";
 import ChatListBody from "./ChatListBody";
-import CreateRoomButton from './../../button/CreateRoomButton';
+import CreateRoomButton from "./../../button/CreateRoomButton";
+import ActiveRoomButton from "../../room/Buttons/ActiveRoomButton";
 
 const ChatList = () => {
   const { profile } = useSelector((state) => state.user);
   const { chatList } = useSelector((state) => state.chat);
+  const { activeRooms, isUserInRoom } = useSelector((state) => state.room);
 
   const [search, setSearch] = useState("");
   const [searchResult, setSearchResult] = useState([]);
@@ -41,7 +43,8 @@ const ChatList = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  console.log(" chatlist chatMessageList :::",chatMessageList)
+  console.log(" chatlist chatMessageList :::", chatMessageList);
+  console.log(" active rooms chatlist -> :::", activeRooms);
   const searchUsers = useCallback(
     async (query) => {
       setIsSearching(true);
@@ -70,7 +73,6 @@ const ChatList = () => {
   //executed  only when user is selected from search dropdown
   const addSelectedUserToList = useCallback(
     (user) => {
-
       //create message object with empty msg  body
       const newUser = {
         receiverId: user?._id,
@@ -90,7 +92,7 @@ const ChatList = () => {
       ChatUtils.privateChatMessages = [];
 
       // we will have id and username as queryparams in url via Search compoentn
-      //as we clicked on a user to call this fn . 
+      //as we clicked on a user to call this fn .
 
       //check if the user selected already exists in chat msg list
       const findUser = find(
@@ -99,9 +101,9 @@ const ChatList = () => {
           chat.receiverId === searchParams.get("id") ||
           chat.senderId === searchParams.get("id")
       );
-      if (findUser){
-        console.log("selected already exists in chat msg list")
-        console.log(chatMessageList)
+      if (findUser) {
+        console.log("selected already exists in chat msg list");
+        console.log(chatMessageList);
       }
 
       //no chatUser means chat is happening for 1st time
@@ -110,12 +112,11 @@ const ChatList = () => {
         const newChatList = [newUser, ...chatMessageList];
         setChatMessageList(newChatList);
 
-        // is chatlist was empty i.e no communication occured with any other user 
+        // is chatlist was empty i.e no communication occured with any other user
         if (!chatList.length) {
-
           dispatch(setSelectedChatUser({ isLoading: false, user: newUser }));
 
-          //set name for receiver 
+          //set name for receiver
           const userTwoName =
             newUser?.receiverUsername !== profile?.username
               ? newUser?.receiverUsername
@@ -143,7 +144,7 @@ const ChatList = () => {
       "receiverId",
       searchParams.get("id"),
     ]);
-    // user found 
+    // user found
     if (userIndex > -1) {
       chatMessageList.splice(userIndex, 1);
       setSelectedUser(null);
@@ -156,8 +157,8 @@ const ChatList = () => {
         username: searchParams.get("username"),
         setSelectedChatUser,
         params: chatMessageList.length
-           //pass 1st chatmsglist user 
-          ? updateQueryParams(chatMessageList[0])
+          ? //pass 1st chatmsglist user
+            updateQueryParams(chatMessageList[0])
           : null,
         pathname: location.pathname,
         navigate,
@@ -178,7 +179,10 @@ const ChatList = () => {
 
   // for user already exist in chat list
   const addUsernameToUrlQuery = async (user) => {
-    console.log("for user already exist in chat list addUsernameToUrlQuery",user)
+    console.log(
+      "for user already exist in chat list addUsernameToUrlQuery",
+      user
+    );
     try {
       const sender = find(
         ChatUtils.chatUsers,
@@ -208,7 +212,7 @@ const ChatList = () => {
         userTwo: userTwoName,
       });
 
-      //last msg is for us send by others and not read by us 
+      //last msg is for us send by others and not read by us
       if (user?.receiverUsername === profile?.username && !user.isRead) {
         await chatService.markMessagesAsRead(profile?._id, receiverId);
       }
@@ -232,7 +236,7 @@ const ChatList = () => {
   //debounceValue changes after the mentioned time in debounce.
   useEffect(() => {
     if (debounceValue) {
-      console.log("debounceValue ::::",debounceValue)
+      console.log("debounceValue ::::", debounceValue);
       searchUsers(debounceValue);
     }
   }, [debounceValue, searchUsers]);
@@ -252,11 +256,23 @@ const ChatList = () => {
   return (
     <div data-testid="chatList">
       <div className="conversation-container">
-            {/*Buttons realted to room  */}
+        {/*Buttons realted to room  */}
+
         <div className="conversation-container-room">
           <CreateRoomButton></CreateRoomButton>
+
+          {/* show all active rooms */}
+          {activeRooms.map((room, index) => (
+            <ActiveRoomButton
+              key={index}
+              roomId={room.roomId}
+              creatorUsername={room.creatorUsername}
+              amountOfParticipants={room.participants.length}
+              isUserInRoom={isUserInRoom}
+            />
+          ))}
         </div>
-        
+
         <div className="conversation-container-header">
           <div className="header-img">
             <Avatar
@@ -268,9 +284,7 @@ const ChatList = () => {
             />
           </div>
           <div className="title-text">{profile?.username}</div>
-          
         </div>
-   
 
         <div
           className="conversation-container-search"
@@ -344,7 +358,7 @@ const ChatList = () => {
                       }
                     />
                   </div>
-                  
+
                   <div className="title-text">
                     {data.receiverUsername !== profile?.username
                       ? data?.receiverUsername
@@ -368,8 +382,7 @@ const ChatList = () => {
                   {data?.body &&
                     !data?.deleteForMe &&
                     !data.deleteForEveryone && (
-                       <ChatListBody data={data} profile={profile} />
-                     
+                      <ChatListBody data={data} profile={profile} />
                     )}
                   {data?.deleteForMe && data?.deleteForEveryone && (
                     <div className="conversation-message">
@@ -406,8 +419,6 @@ const ChatList = () => {
           />
         </div>
       </div>
-  
-                     
     </div>
   );
 };

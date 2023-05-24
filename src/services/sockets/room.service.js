@@ -21,7 +21,7 @@ export const newRoomCreated = (data) => {
 
 export const updateActiveRooms = async (data) => {
   const { activeRooms } = data;
-  console.log("Total active rooms::-> ", activeRooms);
+  // console.log("Total active rooms::-> ", activeRooms);
 
   let rooms = [];
   const response = await followerService.getUserFollowing();

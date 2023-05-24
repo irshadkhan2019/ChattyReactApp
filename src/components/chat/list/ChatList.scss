@@ -7,14 +7,18 @@
   position: relative;
 
   &-room {
-    position: absolute;
-    bottom: 12rem;
     display: flex;
+    position: absolute;
+    bottom: 14rem;
     justify-content: center;
     align-items: center;
     gap: 1rem;
-    // background-color: var(--white-3);
+    flex-wrap: wrap;
+    background-color: var(--white-3);
     width: 100%;
+    min-height: 100px;
+    overflow-y: scroll;
+    scrollbar-color: var(--gray-3);
   }
 
   &-header {

@@ -13,7 +13,7 @@ const CreateRoomButton = (props) => {
   return (
     <Button
       handleClick={createNewRoomHandler}
-      label={<FaPlusCircle size={20}></FaPlusCircle>}
+      label={<FaPlusCircle size={24}></FaPlusCircle>}
       className={"room_btn"}
     />
   );
