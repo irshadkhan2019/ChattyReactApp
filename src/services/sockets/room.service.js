@@ -6,11 +6,18 @@ import {
 import { store } from "../../redux-toolkit/store";
 import { socketService } from "./socket.service";
 import { followerService } from "./../api/followers/follower.service";
+import { getLocalStreamPreview } from "./webrtc.service";
 
 export const createNewRoom = () => {
-  store.dispatch(setOpenRoom({ isUserInRoom: true, isUserRoomCreator: true }));
-  //user who is creating room send event to server
-  socketService.createNewRoom(store.getState().user);
+  //open room only is local stream available
+  const successCallback=()=>{
+    store.dispatch(setOpenRoom({ isUserInRoom: true, isUserRoomCreator: true }));
+    //user who is creating room send event to server
+    socketService.createNewRoom(store.getState().user);
+  }
+
+  getLocalStreamPreview(false,successCallback)
+
 };
 
 export const newRoomCreated = (data) => {

@@ -31,7 +31,12 @@ const roomSlice = createSlice({
       state.activeRooms = action.payload;
     },
 
-    setLocalStream: (state, action) => {},
+    setLocalStream: (state, action) => {
+      const {stream}=action.payload;
+      console.log("STREAM:::",stream)
+      state.localStream=stream;
+    },
+
     setRemoteStreams: (state, action) => {},
     setAudioOnly: (state, action) => {},
     setScreenShareStream: (state, action) => {},
