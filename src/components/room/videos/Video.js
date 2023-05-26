@@ -4,6 +4,8 @@ import { useEffect } from 'react';
 import "./Video.scss"
 
 const Video = ({stream,isLocalStream}) => {
+  // need to change how stream is stored (non-serializable obj not allowed in store)
+  console.log("INSIDE VIDEO:::",stream)
   const videoRef=useRef();
 
   useEffect(()=>{
@@ -22,6 +24,10 @@ const Video = ({stream,isLocalStream}) => {
   )
 }
 
-Video.propTypes = {}
+Video.propTypes = {
+  stream:PropTypes.any,
+  isLocalStream:PropTypes.bool
+  
+}
 
 export default Video

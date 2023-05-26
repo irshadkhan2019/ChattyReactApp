@@ -1,5 +1,6 @@
 import {
   setActiveRooms,
+  setLocalStream,
   setOpenRoom,
   setRoomDetails,
 } from "../../redux-toolkit/reducers/room/room.reducer";
@@ -48,12 +49,24 @@ export const updateActiveRooms = async (data) => {
 };
 
 export const joinRoom = (room) => {
-  store.dispatch(setRoomDetails({ roomDetails: room }));
-  store.dispatch(setOpenRoom({ isUserInRoom: true, isUserRoomCreator: false }));
-  socketService.joinRoom(store.getState().user, room.roomId);
+  const successCallback=()=>{
+    store.dispatch(setRoomDetails({ roomDetails: room }));
+    store.dispatch(setOpenRoom({ isUserInRoom: true, isUserRoomCreator: false }));
+    socketService.joinRoom(store.getState().user, room.roomId);
+  }
+
+  getLocalStreamPreview(false,successCallback)
 };
 
 export const leaveRoom = () => {
+
+  const localStream=store.getState().room.localStream;
+  if(localStream){
+    //close all tracks
+    localStream.getTracks().forEach((track)=>track.stop());
+    store.dispatch(setLocalStream({stream:null}))
+  }
+  
   socketService.leaveRoom(
     store.getState().user,
     store.getState().room.roomDetails.roomId

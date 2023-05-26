@@ -5,7 +5,7 @@ const initialState = {
   isUserRoomCreator: false,
   roomDetails: null,
   activeRooms: [],
-  localStream: null,
+  localStream: {},
   remoteStreams: [],
   audioOnly: false,
   screenSharingStream: null,
