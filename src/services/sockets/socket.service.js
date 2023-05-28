@@ -33,6 +33,11 @@ class SocketService {
     this.socket.on("active-rooms", (activeRooms) => {
       updateActiveRooms(activeRooms);
     });
+
+    // new users joins and sends his socket id to prepare for connection
+    this.socket.on("conn-prepare", (socketId) => {
+        console.log("PREpare conn",socketId)
+      });
   }
   // create a room and emit event to server
   createNewRoom = (user) => {
