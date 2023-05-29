@@ -37,6 +37,12 @@ class SocketService {
     this.socket.on("active-rooms", (activeRooms) => {
       updateActiveRooms(activeRooms);
     });
+    // listen for signaling  data
+    this.socket.on("conn-signal", (data) => {
+      //data format  is signalData from prepareNewPeerConnection fn
+      this.handleSignalingData(data)
+
+    });
     //new users recieves that others have prepared to accept connections
     this.socket.on("conn-init", (data) => {
       const {conUserSocketId}=data;
@@ -54,6 +60,15 @@ class SocketService {
         })
       });
   }
+
+  handleSignalingData(data){
+    const {conUserSocketId,signal}=data;
+
+    //add signal data to conUserSocketId obj
+    if(this.peers[conUserSocketId]){
+      this.peers[conUserSocketId].signal(signal)
+       }
+    }
   // create a room and emit event to server
   createNewRoom = (user) => {
     this.socket.emit("room-create", user);
@@ -119,15 +134,23 @@ class SocketService {
       }
      // console.log("signalData",signalData)
       // todo :pass signaling data to other user
+      this.signalPeerData(signalData)
     })
     //event triggers when connection is established with other user
     this.peers[conUserSocketId].on("stream",(remoteStream)=>{
       //Todod add new remote stream to server store
-      console.log("remoteStream",remoteStream)
+      console.log("Direct con established,remoteStream CAME ::::::",remoteStream)
+      
     })
 
     console.log("PEERS:::",this.peers)
 
   }
+
+  // to pass signal data to other user
+ signalPeerData=(data)=>{
+    this.socket.emit('conn-signal',data)
+ }
+
 }
 export const socketService = new SocketService();
