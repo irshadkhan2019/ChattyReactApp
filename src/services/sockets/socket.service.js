@@ -2,6 +2,7 @@ import { io } from "socket.io-client";
 import { newRoomCreated, updateActiveRooms } from "./room.service";
 import { store } from "../../redux-toolkit/store";
 import Peer from "simple-peer"
+import { setRemoteStreams } from "../../redux-toolkit/reducers/room/room.reducer";
 
 class SocketService {
   socket;
@@ -139,8 +140,10 @@ class SocketService {
     //event triggers when connection is established with other user
     this.peers[conUserSocketId].on("stream",(remoteStream)=>{
       //Todod add new remote stream to server store
-      console.log("Direct con established,remoteStream CAME ::::::",remoteStream)
-      
+      console.log("Direct con established,remoteStream CAME ::::::",remoteStream);
+      //add info to remoteSteam ,abt the user whose this  stream is . 
+      remoteStream.conUserSocketId=conUserSocketId;
+      this.addNewRemoteStream(remoteStream)
     })
 
     console.log("PEERS:::",this.peers)
@@ -150,6 +153,13 @@ class SocketService {
   // to pass signal data to other user
  signalPeerData=(data)=>{
     this.socket.emit('conn-signal',data)
+ }
+
+ addNewRemoteStream=(remoteStream)=>{
+    const remoteStreams=store.getState().room.remoteStreams;
+    const addNewRemoteStream=[...remoteStreams,remoteStream]
+    console.log("addNewRemoteStream",addNewRemoteStream)
+    store.dispatch(setRemoteStreams(addNewRemoteStream))
  }
 
 }

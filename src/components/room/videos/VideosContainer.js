@@ -7,18 +7,15 @@ import { id } from "date-fns/locale";
 
 const VideosContainer = (props) => {
   const { localStream } = useSelector((state) => state.room);
-  const [isLocalStream,setIslocalStream]=useState(true)
+  const { remoteStreams } = useSelector((state) => state.room);
 
-  useEffect(()=>{
-    if(localStream){
-      setIslocalStream(true)
-    }else{
-      setIslocalStream(false)
-    }
-  },[localStream])
-
+  console.log("VIDEOSCONTAINER_REMOTE_STREAM::",remoteStreams)
   return <div className="video-container">
-    <Video stream={localStream} isLocalStream={isLocalStream}></Video>
+    <Video stream={localStream} isLocalStream={true}></Video>
+    {remoteStreams.map((stream)=>(
+       <Video stream={stream} isLocalStream={false} key={stream.id}></Video>
+    ))}
+    
   </div>;
 };
 

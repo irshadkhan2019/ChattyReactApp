@@ -37,7 +37,10 @@ const roomSlice = createSlice({
       state.localStream=stream;
     },
 
-    setRemoteStreams: (state, action) => {},
+    setRemoteStreams: (state, action) => {
+      state.remoteStreams=action.payload
+    },
+
     setAudioOnly: (state, action) => {},
     setScreenShareStream: (state, action) => {},
   },
