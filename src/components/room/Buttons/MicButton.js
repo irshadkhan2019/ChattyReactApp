@@ -4,11 +4,12 @@ import { BsFillMicMuteFill } from "react-icons/bs";
 import { BsFillMicFill } from "react-icons/bs";
 import Button from "../../button/Button";
 
-export const MicButton = () => {
+export const MicButton = ({localStream}) => {
   const [micEnabled, setMicEnabled] = useState(false);
 
   const handleToggleMic = () => {
     setMicEnabled(!micEnabled);
+    localStream.getAudioTracks()[0].enabled=micEnabled;
   };
 
   return (

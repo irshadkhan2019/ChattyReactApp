@@ -4,11 +4,12 @@ import { BsCameraVideoOffFill } from "react-icons/bs";
 import { BsCameraVideoFill } from "react-icons/bs";
 import { useState } from "react";
 
-const CameraButton = () => {
+const CameraButton = ({localStream}) => {
   const [cameraEnabled, setCameraEnabled] = useState(false);
 
   const handleToggleCamera = () => {
     setCameraEnabled(!cameraEnabled);
+    localStream.getVideoTracks()[0].enabled=cameraEnabled;
   };
 
   return (
